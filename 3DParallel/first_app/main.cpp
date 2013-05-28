@@ -8,6 +8,9 @@ main.cpp
 #define GLX_GLXEXT_LEGACY //Must be declared so that our local glxext.h is picked up, rather than the system one
 
 #ifdef _WIN32
+
+//function declarations of Windows system calls or the WinAPI. 
+//The WinAPI has everything necessary for programming under windows.
 #include <windows.h>
 #include "glwindow.h"
 #else
@@ -24,10 +27,10 @@ main.cpp
 *****************************************************************************/
 
 #ifdef _WIN32
-int WINAPI WinMain(HINSTANCE hInstance,
-                   HINSTANCE hPrevInstance,
-                   LPSTR cmdLine,
-                   int cmdShow)
+int WINAPI WinMain(HINSTANCE hInstance,/* Handle to the current application instance */
+                   HINSTANCE hPrevInstance,/* Handle to the previous application instance */
+                   LPSTR cmdLine,  /* pointer to command line arguments */
+                   int cmdShow)/* show state of the window (Maximized, Minimized, etc).*/
 {
 #else
 int main(int argc, char** argv)
@@ -41,7 +44,7 @@ int main(int argc, char** argv)
 
 #ifdef _WIN32
     //Instantiate our helper class called program window located in glwindow.cpp
-	//GLWindow creates a window from the application instance
+	//GLWindow creates a window from the application instance hInstance
     GLWindow programWindow(hInstance);
 #else
     SimpleGLXWindow programWindow;
@@ -56,7 +59,7 @@ int main(int argc, char** argv)
 	//Set the model in GLwindow to point to address of the model 
     programWindow.attachModel(&model);
 
-    //Attempt to create the window given the Width, Height, Bits per pixel, Fullscreen mode
+    //Attempt to register and create the window given the Width, Height, Bits per pixel, Fullscreen mode
 	//Here is where it fills out class structure, register the class, create window, display window
     if (!programWindow.create(windowWidth, windowHeight, windowBPP, windowFullscreen))
     {
@@ -68,7 +71,7 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    if (!model.init()) //Initialize our example
+    if (!model.init()) //Initialize our OpenGL example
     {
 #ifdef _WIN32
         MessageBox(NULL, "Could not initialize the application", "An error occurred", MB_ICONERROR | MB_OK);

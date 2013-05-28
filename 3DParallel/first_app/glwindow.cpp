@@ -1,10 +1,22 @@
 #include <ctime>
 #include <iostream>
 #include <windows.h>
+//Contains many macros designed to make coding easier.
+//Use to handle the menu
+#include <windowsx.h>
+#define _WIN32_IE 0x0500 // To support INITCOMMONCONTROLSEX
+
+//Contains the function for special controls 
+#include <commctrl.h>
+
 #include <GL/gl.h>
 #include "wglext.h"
 #include "glwindow.h"
 #include "ModelGL.h"
+//File with the icons, GUI elements, Menu, Version
+#include "resource.h"
+//About dialog bix
+#include "AboutDialog.h"
 
 typedef HGLRC (APIENTRYP PFNWGLCREATECONTEXTATTRIBSARBPROC)(HDC, HGLRC, const int*);
 PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = NULL;
@@ -18,7 +30,10 @@ m_lastTime(0)
 {
     g_LeftButtonPressed = false;	//Left Button Pressed
 	g_MiddleButtonPressed = false;	//Middle Button is Pressed
-	debug = false;					//Debug is false
+	//debug = false;					//Debug is false
+	debug = true;
+	 m_hMainToolbar = NULL; //Init Main Toolbar window to NULL
+	 m_hPaintToolbar = NULL;//Init Paint toolbar window to NULL
 }
 
 /*****************************************************************************
@@ -43,19 +58,22 @@ bool GLWindow::create(int width, int height, int bpp, bool fullscreen)
     m_windowRect.top = (long)0;				// Set Top Value To 0
     m_windowRect.bottom = (long)height;		// Set Bottom Value To Requested Height
 
-    // Fill out the window class structure
-    m_windowClass.cbSize          = sizeof(WNDCLASSEX);
-    m_windowClass.style           = CS_HREDRAW | CS_VREDRAW;
-    m_windowClass.lpfnWndProc     = GLWindow::StaticWndProc; //We set our static method as the event handler
-    m_windowClass.cbClsExtra      = 0;
-    m_windowClass.cbWndExtra      = 0;
-    m_windowClass.hInstance       = m_hinstance;
-    m_windowClass.hIcon           = LoadIcon(NULL, IDI_APPLICATION);  // default icon
+    // *******Fill out the window class structure WNDCLASSEX******
+	//WNDCLASSEX provides all the information necessary to perform 
+	//windows stuff like icon, cursor, menu, calling the callback,and 
+	//receive messages
+    m_windowClass.cbSize          = sizeof(WNDCLASSEX);// Must always be sizeof(WNDCLASSEX)
+    m_windowClass.style           = CS_HREDRAW | CS_VREDRAW;// Class styles
+    m_windowClass.lpfnWndProc     = GLWindow::StaticWndProc; //We set our static method as the pointer to callback or event handler
+    m_windowClass.cbClsExtra      = 0;// Extra bytes to allocate following the wndclassex structure
+    m_windowClass.cbWndExtra      = 0;// Extra bytes to allocate following an instance of the structure
+    m_windowClass.hInstance       = m_hinstance;//Instance of the application
+    m_windowClass.hIcon           = LoadIcon(m_hinstance, MAKEINTRESOURCE(IDI_APP_ICON)); // Class Icon  // default icon
     m_windowClass.hCursor         = LoadCursor(NULL, IDC_ARROW);      // default arrow
-    m_windowClass.hbrBackground   = NULL;                             // don't need background
-    m_windowClass.lpszMenuName    = NULL;                             // no menu
-    m_windowClass.lpszClassName   = "GLClass";
-    m_windowClass.hIconSm         = LoadIcon(NULL, IDI_WINLOGO);      // windows logo small icon
+    m_windowClass.hbrBackground   = NULL;                             // don't need background brush
+    m_windowClass.lpszMenuName    = MAKEINTRESOURCE(IDM_MAINMENU); // Menu Resource in Resource.h                            // no menu
+    m_windowClass.lpszClassName   = "GLClass";						  //Name of this class
+    m_windowClass.hIconSm         = LoadIcon(m_hinstance, MAKEINTRESOURCE(IDI_APP_ICON)); // windows logo small icon
 
     // Register the windows class
     if (!RegisterClassEx(&m_windowClass))
@@ -63,11 +81,18 @@ bool GLWindow::create(int width, int height, int bpp, bool fullscreen)
         return false;
     }
 
+	 // Initialize Common controls
+	INITCOMMONCONTROLSEX icx;
+	// Ensure common control DLL is loaded
+	icx.dwSize = sizeof(INITCOMMONCONTROLSEX);
+	icx.dwICC = ICC_BAR_CLASSES; // Specify BAR classes
+	InitCommonControlsEx(&icx); // Load the common control DLL
+
     if (m_isFullscreen) // If we are fullscreen, we need to change the display mode                             
     {
         DEVMODE dmScreenSettings;                   // Device mode
         
-        memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
+        memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));		//Clear the dmScreenSettings memory
         dmScreenSettings.dmSize = sizeof(dmScreenSettings); 
 
         dmScreenSettings.dmPelsWidth = width;			// screen width
@@ -100,15 +125,15 @@ bool GLWindow::create(int width, int height, int bpp, bool fullscreen)
     // class registered, so now create our window
     m_hwnd = CreateWindowEx(NULL,               // extended style
         "GLClass",							    // class name
-        "3D Parallel Coordinates",				// app name
-        dwStyle | WS_CLIPCHILDREN |
+        "3D Parallel Coordinates",				// Window Title
+        dwStyle | WS_CLIPCHILDREN |				//Window Style
         WS_CLIPSIBLINGS,
-        0, 0,									// x,y coordinate
-        m_windowRect.right - m_windowRect.left,
-        m_windowRect.bottom - m_windowRect.top, // width, height
+        0, 0,									// x,y position of window
+        m_windowRect.right - m_windowRect.left,	//Width of Window
+        m_windowRect.bottom - m_windowRect.top, // Height of the window
         NULL,									// handle to parent
         NULL,									// handle to menu
-        m_hinstance,						    // application instance
+        m_hinstance,						    // handle to application instance
         this);									// we pass a pointer to the GLWindow here
 
     // check if window creation failed (hwnd would equal NULL)
@@ -164,21 +189,21 @@ Process events sent by the Operating Sstem
 *****************************************************************************/
 void GLWindow::processEvents()
 {
-    MSG msg;
+    MSG msg;	//The message from OS to application
 
     //While there are messages in the queue, store them in msg
     while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
     {
         //Process the messages one-by-one
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
+        TranslateMessage(&msg); // translates virtual key messages to character messages.
+        DispatchMessage(&msg); // dispatches the message to a window procedure.
     }
 }
 
 
 /*****************************************************************************
  GLWindow::setupPixelFormat
-Sets the pixel format sued in the device context
+Sets the pixel format in the device context
 *****************************************************************************/
 void GLWindow::setupPixelFormat(void)
 {
@@ -246,6 +271,12 @@ LRESULT GLWindow::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         m_hdc = GetDC(hWnd);		//Get the device context handle
         setupPixelFormat();			//Set up the pixel format
 
+		//Create the UI Elements
+		if (!GLWindow::OnCreate(hWnd, (LPCREATESTRUCT)lParam))
+        {
+			std::cerr << "Status Bar did not create" << std::endl;
+  
+        }
         //Set the version that we want, in this case 3.0
         int attribs[] = {
 	        WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
@@ -257,7 +288,7 @@ LRESULT GLWindow::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         //Make it current context
         wglMakeCurrent(m_hdc, tmpContext);
 
-        //Get the function pointer
+        //Get the function pointer for opengl 3.0 context
         wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC) wglGetProcAddress("wglCreateContextAttribsARB");
 
         //If this is NULL then OpenGL 3.0 is not supported
@@ -282,17 +313,24 @@ LRESULT GLWindow::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     break;
     case WM_DESTROY: // window destroy
     case WM_CLOSE: // windows is closing
-        wglMakeCurrent(m_hdc, NULL);
-        wglDeleteContext(m_hglrc);
+        wglMakeCurrent(m_hdc, NULL); //Make current device context to be null
+        wglDeleteContext(m_hglrc);	//Delete the current rendering context 
         m_isRunning = false; //Stop the main loop
         PostQuitMessage(0); //Send a WM_QUIT message
         return 0;
     break;
+	//When the window is resized
     case WM_SIZE:
     {
         int height = HIWORD(lParam);        // retrieve width and height
         int width = LOWORD(lParam);
         getAttachedModel()->onResize(width, height); //Call the example's resize method
+
+		// Resize Status Bar Window by sending message statusbar window
+		SendMessage(GLWindow::m_hStatusbar,uMsg,wParam,lParam);
+
+		// Resize Toolbar Window by sending message statusbar window
+		SendMessage(GLWindow::m_hMainToolbar,uMsg,wParam,lParam);
     }
     break;
 	case WM_KEYDOWN:             
@@ -337,8 +375,10 @@ LRESULT GLWindow::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			g_LastCursorPos.y = g_OrigCursorPos.y;
 
 			if (debug){
-			OutputDebugString("Left Button Pressed. \n");
+			OutputDebugString("Middle Button Pressed. \n");
 			}
+
+
 		}
 		return 0;
 	case WM_MBUTTONUP:
@@ -438,11 +478,13 @@ LRESULT GLWindow::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			}
 		}
 	return 0;
-
+	//Handles MENU presses adn set the callback
+	case WM_COMMAND:
+		HANDLE_WM_COMMAND(hWnd, wParam, lParam, OnCommand);
     default:
         break;
     }
-
+	//All messages that you don't want to handle should be passed to the DefWindowProc()
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
@@ -538,7 +580,7 @@ void GLWindow::HandleKeyPress(UINT wParam)
     }
 	if (wParam == 0x51) //Q
     {
-		getAttachedModel()->Zoom(1);	//Increase Eye Separation
+		getAttachedModel()->Zoom(1);	//Zoom
        
     }
 
@@ -554,9 +596,13 @@ void GLWindow::HandleKeyPress(UINT wParam)
 
  Windows message handler
 ******************************************************************************/
-LRESULT CALLBACK GLWindow::StaticWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK GLWindow::StaticWndProc(HWND hWnd, // // Handle of window which received this message
+										 UINT uMsg,	//The message 
+										 WPARAM wParam, //Pass extra info about the message
+										 LPARAM lParam)//Pass extra info about the message
 {
-    GLWindow* window = NULL;
+    //Initialize the window
+	GLWindow* window = NULL;
 
     //If this is the create message
     if(uMsg == WM_CREATE)
@@ -574,13 +620,155 @@ LRESULT CALLBACK GLWindow::StaticWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 
         if(!window) 
         {
-            return DefWindowProc(hWnd, uMsg, wParam, lParam);    
+            //All messages that you don't want to handle should be passed to the DefWindowProc()
+			return DefWindowProc(hWnd, uMsg, wParam, lParam);    
         }
     }
 
     //Call our window's member WndProc (allows us to access member variables)
     return window->WndProc(hWnd, uMsg, wParam, lParam);
 }
+
+
+// Function: OnCommand
+// Handles WM_COMMAND messages (Menu, toolbar, etc)
+void GLWindow::OnCommand(HWND hwnd, int id, HWND hCtl, UINT codeNotify)
+{
+	switch(id)
+	{
+		case IDM_FILE_EXIT:                                        
+			wglMakeCurrent(m_hdc, NULL); //Make current device context to be null
+			wglDeleteContext(m_hglrc);	//Delete the current rendering context 
+			m_isRunning = false; //Stop the main loop
+		break;
+		case IDM_FILE_OPEN:
+			 // open a file name
+			ZeroMemory( &ofn , sizeof( ofn));
+			ofn.lStructSize = sizeof ( ofn );
+			ofn.hwndOwner = NULL ;
+			ofn.lpstrFile = szFile ;
+			ofn.lpstrFile[0] = '\0';
+			ofn.nMaxFile = sizeof( szFile );
+			ofn.lpstrFilter = "All\0*.*\0Text\0*.TXT\0";
+			ofn.nFilterIndex =1;
+			ofn.lpstrFileTitle = NULL ;
+			ofn.nMaxFileTitle = 0 ;
+			ofn.lpstrInitialDir=NULL ;
+			ofn.Flags = OFN_PATHMUSTEXIST|OFN_FILEMUSTEXIST ;
+			GetOpenFileName( &ofn );
+			// Now simpley display the file name
+			MessageBox ( NULL , ofn.lpstrFile , "File Name" , MB_OK);
+			//Clear the opengl screen
+			getAttachedModel()->clearScreen();	//Clear the screen
+			
+			char buf[2048];
+			sprintf(buf,"Loading the pcap file %s\n", ofn.lpstrFile);
+			OutputDebugString(buf);
+			getAttachedModel()->loadPcapFile(ofn.lpstrFile);
+
+		break;
+		case IDM_HELP_ABOUT:
+			AboutDialog* dlg = new AboutDialog();	//Create an instance of a about Dialog
+			dlg->Run(m_hinstance, hwnd);			//Show the window
+			delete dlg; 				//Delete the instance to prevent memory leaks
+			dlg = NULL;	
+		break;
+
+	}
+}
+
+// Creates the toolbars and statusbar
+// Parameters:
+// cs - Contains initialization parameters
+// Returns:
+// void
+bool GLWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpcs)
+{
+	//Number of buttons in the toolbar
+	const int numbuttons1 = 4;
+
+	// Create Statusbar
+	GLWindow::m_hStatusbar = CreateStatusWindow(WS_CHILD|WS_VISIBLE, "Ready", hwnd, IDC_STATUSBAR);
+	
+	 // Create Main Toolbar
+	GLWindow::m_hMainToolbar = CreateWindowEx(
+		0, 
+		TOOLBARCLASSNAME, 
+		NULL,
+		WS_CHILD | TBSTYLE_FLAT,
+		0, 
+		0, 
+		0, 
+		0,
+		hwnd, 
+		NULL, 
+		GLWindow::m_hinstance, 
+		NULL);
+
+	 HIMAGELIST hImageList1 = ImageList_Create(
+		16,	
+		16, // 16x16 button size
+		ILC_COLOR16 | ILC_MASK, // ILC_MASK ensures transparent background
+		numbuttons1,
+		0);
+
+	 // Set the image list.
+	SendMessage(
+		GLWindow::m_hMainToolbar, 
+		TB_SETIMAGELIST, 
+		(WPARAM)0,
+		(LPARAM)hImageList1);
+
+	 // Load the button images.
+	SendMessage(
+		GLWindow::m_hMainToolbar, 
+		TB_LOADIMAGES,
+		(WPARAM)IDB_STD_SMALL_COLOR, 
+		(LPARAM)HINST_COMMCTRL);
+	
+	//Create an array of buttons
+	 TBBUTTON tbButtons1[numbuttons1] = {
+		 {MAKELONG(STD_FILENEW, 0), 
+			IDM_FILE_NEW, 
+			TBSTATE_ENABLED,
+			BTNS_AUTOSIZE, 
+			{0}, 
+			0, 
+			0},
+		{MAKELONG(STD_FILEOPEN, 0), 
+			IDM_FILE_OPEN, 
+			TBSTATE_ENABLED,
+			BTNS_AUTOSIZE, 
+			{0}, 
+			0, 
+			0},
+		{MAKELONG(STD_FILESAVE, 0), 
+			IDM_FILE_SAVE, 
+			TBSTATE_ENABLED,
+			BTNS_AUTOSIZE, 
+			{0}, 
+			0, 
+			0},
+		{MAKELONG(STD_FILESAVE, 0), 
+			0, 
+			TBSTATE_ENABLED,
+			TBSTYLE_SEP, 
+			{0}, 
+			0, 
+			0}
+	};
+
+	// Add buttons to toolbar
+	SendMessage(GLWindow::m_hMainToolbar, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
+	SendMessage(GLWindow::m_hMainToolbar, TB_ADDBUTTONS, (WPARAM)numbuttons1, (LPARAM)&tbButtons1);
+ 
+	// Show toolbar
+	SendMessage(GLWindow::m_hMainToolbar, TB_AUTOSIZE, 0, 0);
+	ShowWindow(GLWindow::m_hMainToolbar, TRUE);
+
+	return true;
+}
+
 
 float GLWindow::getElapsedSeconds()
 {

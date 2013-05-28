@@ -60,7 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib wpcap.lib"
+				AdditionalDependencies="ws2_32.lib wpcap.lib comctl32.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -171,6 +171,50 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
+			<File
+				RelativePath=".\Controller.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ControllerGL.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\glwindow.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\main.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ModelGL.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Parser.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\tgaload.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ViewGL.cpp"
+				>
+			</File>
+			<Filter
+				Name="About"
+				>
+				<File
+					RelativePath=".\AboutDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\AboutDialog.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -228,35 +272,11 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\Controller.cpp"
+				RelativePath=".\resource.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ControllerGL.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\glwindow.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\main.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ModelGL.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Parser.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\tgaload.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ViewGL.cpp"
+				RelativePath=".\resource.rc"
 				>
 			</File>
 		</Filter>

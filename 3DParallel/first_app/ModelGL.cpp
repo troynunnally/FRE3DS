@@ -103,28 +103,9 @@ bool ModelGL::init()
 
 	initLights();										//Set up Ambient Light and Diffuse Light	
 	
-	//The parser for conversion from network data to GL coordinates
-    Parser glParser;
-	//glParser.readPacketsFromFile("port_source_confusion_r2.pcap");
-	glParser.readPacketsFromFile("port_confusion_DOS_and_scan.pcap");
 	
-	glParser.showVertexSize(); 
-	glParser.showVertexIndex(0);
 
-	int numVertexSize = glParser.getVertexSize();
-	
-	vector<double> vertex;
-	vertex.clear();
-		
-	vertex = glParser.gl_vertices;
-	//Create the Vertex - array to a line
-   
-	//Number of Vertex Elements in the Vertex Array
-	m_numVertexBufElements = numVertexSize;
-
-    glGenBuffers(1, &m_vertexBuffer);			//Generate one buffer name and store it into the variable that can store one buffer name											//Generate a buffer for the vertices
-    glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);//Bind buffer into GL_ARRAY_BUFFER is used for per-vertex data									//Bind the vertex buffer
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLdouble) * (numVertexSize), &vertex[0], GL_STATIC_DRAW); //Send the data to OpenGL
+	ModelGL::loadPcapFile("p01_port_confusion_DOS_and_scan.pcap");
 
     //Return success
     return true;
@@ -437,6 +418,60 @@ void ModelGL::shutdown()
 
 }
 
+/************************************************************************************
+* clearScreen - Clears the sceen
+*************************************************************************************/
+void ModelGL::clearScreen()
+{
+	char buf[2048];
+	sprintf(buf,"Clearing the Screen... \n");
+	OutputDebugString(buf);
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clean the screen and the depth buffer
+	glLoadIdentity();
+
+
+
+}
+
+/************************************************************************************
+* loadPcap - Loads the pcap file
+*************************************************************************************/
+bool ModelGL::loadPcapFile(char * pcapFileName)
+{
+
+	//The parser for conversion from network data to GL coordinates
+    Parser glParser;
+	//m_parser = glParser;
+
+	//glParser.readPacketsFromFile("port_source_confusion_r2.pcap");
+	glParser.readPacketsFromFile(pcapFileName);
+	
+	glParser.showVertexSize(); 
+	glParser.showVertexIndex(0);
+
+	int numVertexSize = glParser.getVertexSize();
+
+	vector<double> vertex;
+	vertex.clear();
+	vertex = glParser.gl_vertices;
+	//Create the Vertex - array to a line
+   
+	//Number of Vertex Elements in the Vertex Array
+	m_numVertexBufElements = numVertexSize;
+
+	glGenBuffers(1, &m_vertexBuffer);			//Generate one buffer name and store it into the variable that can store one buffer name											//Generate a buffer for the vertices
+    glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);//Bind buffer into GL_ARRAY_BUFFER is used for per-vertex data									//Bind the vertex buffer
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLdouble) * (numVertexSize), &vertex[0], GL_STATIC_DRAW); //Send the data to OpenGL
+
+
+	return true;
+}
+
+
+/************************************************************************************
+* onResize - Resizes the viewport
+*************************************************************************************/
 void ModelGL::onResize(int width, int height)
 {
     glViewport(0, 0, width, height); //Viewport is the display area on the OpenGL's 2D application window

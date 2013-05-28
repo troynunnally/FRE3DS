@@ -54,7 +54,11 @@ public:
     void render();							//Draw the scene
     void shutdown();						//Currently - DNE			
 	void onResize(int width, int height);	//Adjust the viewport and perspective
+	void clearScreen();						//Clears the opengl screen
 	
+	//*****Use for adjusting the camera*****//
+	bool loadPcapFile(char * pcapFileName);
+
 	void setMouseLeft(bool flag) { mouseLeftDown = flag; };
     void setMouseRight(bool flag) { mouseRightDown = flag; };
     void setMousePosition(int x, int y) { mouseX = x; mouseY = y; };
@@ -72,6 +76,7 @@ public:
 	void AdjustEyeSeparation(int);			//Adjust Eye Separation of Left and Right Camera
 	void AdjustFocalLength(int);			//Adjust the focal length of the camera
 	void Zoom(int);							//Zooms the camera in the direction of vd
+
 
 
 private:
