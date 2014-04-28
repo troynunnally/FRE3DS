@@ -33,6 +33,18 @@ class Navsec extends CI_Controller {
 
 			
 		}
+		
+		
+	function reset_user()
+		{
+
+			/*VARIABLES PASS*/
+					$this->commands_model->reset_user();
+					
+			/*REFRESH HOME*/
+				redirect('dashboard', 'refresh');
+			
+		}	
 	
 }
 

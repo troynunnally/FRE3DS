@@ -1,0 +1,83 @@
+    /* resource.rc
+    *resource-definition script (.rc file) 
+	*describes the resources (Dialog, Menu, etc.)used by your application.
+    */
+     
+    #include <windows.h>
+    #include "resource.h"
+
+//Add icon
+IDI_APP_ICON ICON DISCARDABLE "res\\draw.ico"
+
+// About window
+IDD_ABOUT DIALOG DISCARDABLE 32, 32, 180, 100
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About Parrallel 3D - P3D"
+FONT 8, "MS Sans Serif"
+BEGIN
+	CTEXT "P3D v0.1", IDC_STATIC, 40, 12, 100, 8
+	ICON IDI_APP_ICON, IDC_STATIC, 80, 28, 32, 32
+	DEFPUSHBUTTON "&Ok", IDOK, 66, 80, 50, 14
+	CTEXT "A 3D network security visualization application for Windows", IDC_STATIC, 7, 52, 166, 16
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_KINECT DIALOGEX 0, 0, 512, 424
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_CONTROLPARENT | WS_EX_APPWINDOW
+CAPTION "InterSec - Kinect"
+CLASS "SkeletonBasicsAppDlgWndClass"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_VIDEOVIEW,"Static",SS_BLACKFRAME,0,0,512,384
+    LTEXT           "Click 'Seated' to change skeletal pipeline type!",IDC_STATUS,0,413,511,11,SS_SUNKEN,WS_EX_CLIENTEDGE
+    CONTROL         "Seated",IDC_CHECK_SEATED,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,238,391,55,8
+END
+
+
+// Add Menu
+IDM_MAINMENU MENU DISCARDABLE
+BEGIN
+	POPUP "&File"
+	BEGIN
+		MENUITEM "&Import Pcap\tCtrl+O", IDM_FILE_OPEN
+		MENUITEM SEPARATOR
+		MENUITEM "E&xit", IDM_FILE_EXIT
+	END
+	POPUP "&Help"
+	BEGIN
+		MENUITEM "&About", IDM_HELP_ABOUT
+	END
+END
+
+//Adding version info
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION 1,0,0,1
+PRODUCTVERSION 1,0,0,1
+FILEFLAGSMASK VS_FF_PRERELEASE // Which bits are to be taken
+FILEFLAGS VS_FF_PRERELEASE // This is a pre-release version
+FILEOS VOS__WINDOWS32 // Built for Windows 32 bit OS
+FILETYPE VFT_APP // Type of this is Application
+FILESUBTYPE 0x0L // 0
+BEGIN
+	BLOCK "StringFileInfo"
+	BEGIN
+		BLOCK "040904B0"
+		BEGIN
+			VALUE "CompanyName", "CAP Lab\0"
+			VALUE "FileDescription", "Parallel 3D Application\0"
+			VALUE "FileVersion", "1, 0, 0, 1\0"
+			VALUE "InternalName", "P3D\0"
+			VALUE "LegalCopyright", "Copyright (C) 2013\0"
+			VALUE "LegalTrademarks", "\0"
+			VALUE "OriginalFilename", "P3D.exe\0"
+			VALUE "ProductName", "P3D\0"
+			VALUE "ProductVersion", "1, 0, 0, 1\0"
+		END
+	END
+END

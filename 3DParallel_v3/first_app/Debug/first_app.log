@@ -1,0 +1,111 @@
+﻿Build started 4/28/2014 12:10:15 PM.
+     1>Project "C:\Users\VizSec\Desktop\3DParallel_v3\first_app\first_app.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "Debug\3DParallel.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /Iinclude /IC:\WpdPack_4_1_2\WpdPack\Include /IC:\WpdPack\Include /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D WPCAP /D HAVE_REMOTE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt Controller.cpp ControllerGL.cpp CSkeletonBasics.cpp Db.cpp glwindow.cpp main.cpp ModelGL.cpp Parser.cpp tgaload.cpp ViewGL.cpp AboutDialog.cpp
+         AboutDialog.cpp
+         ViewGL.cpp
+         tgaload.cpp
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\tgaload.cpp(54): warning C4244: 'argument' : conversion from 'unsigned int' to 'GLfloat', possible loss of data
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\tgaload.cpp(305): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(234) : see declaration of 'fopen'
+         Parser.cpp
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\parser.cpp(51): warning C4101: 'payload' : unreferenced local variable
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\parser.cpp(113): warning C4101: 'buf' : unreferenced local variable
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\parser.cpp(208): warning C4101: 'buf' : unreferenced local variable
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\parser.cpp(199): warning C4101: 'port_ratio' : unreferenced local variable
+         ModelGL.cpp
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\modelgl.cpp(181): warning C4101: 'count' : unreferenced local variable
+         main.cpp
+     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\cstdio(48): warning C4995: 'gets': name was marked as #pragma deprecated
+     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\cstdio(52): warning C4995: 'sprintf': name was marked as #pragma deprecated
+     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\cstdio(55): warning C4995: 'vsprintf': name was marked as #pragma deprecated
+     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\cstring(21): warning C4995: 'strcat': name was marked as #pragma deprecated
+     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\cstring(22): warning C4995: 'strcpy': name was marked as #pragma deprecated
+     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\cwchar(30): warning C4995: 'swprintf': name was marked as #pragma deprecated
+     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\cwchar(31): warning C4995: 'vswprintf': name was marked as #pragma deprecated
+     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\cwchar(33): warning C4995: 'wcscat': name was marked as #pragma deprecated
+     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\cwchar(35): warning C4995: 'wcscpy': name was marked as #pragma deprecated
+     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\intrin.h(1092): warning C4995: 'wcscat': name was marked as #pragma deprecated
+     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\intrin.h(1094): warning C4995: 'wcscpy': name was marked as #pragma deprecated
+     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\string(757): warning C4995: 'swprintf': name was marked as #pragma deprecated
+     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\string(766): warning C4995: 'swprintf': name was marked as #pragma deprecated
+     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\string(775): warning C4995: 'swprintf': name was marked as #pragma deprecated
+         glwindow.cpp
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\glwindow.cpp(7): warning C4005: '_WIN32_IE' : macro redefinition
+                 c:\program files (x86)\microsoft sdks\windows\v7.0a\include\sdkddkver.h(230) : see previous definition of '_WIN32_IE'
+     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\intrin.h(1092): warning C4995: 'wcscat': name was marked as #pragma deprecated
+     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\intrin.h(1094): warning C4995: 'wcscpy': name was marked as #pragma deprecated
+     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\string(757): warning C4995: 'swprintf': name was marked as #pragma deprecated
+     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\string(766): warning C4995: 'swprintf': name was marked as #pragma deprecated
+     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\string(775): warning C4995: 'swprintf': name was marked as #pragma deprecated
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\glwindow.cpp(222): warning C4995: 'wsprintf': name was marked as #pragma deprecated
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\glwindow.cpp(222): warning C4995: 'wsprintfW': name was marked as #pragma deprecated
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\glwindow.cpp(248): warning C4995: 'wsprintf': name was marked as #pragma deprecated
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\glwindow.cpp(248): warning C4995: 'wsprintfW': name was marked as #pragma deprecated
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\glwindow.cpp(193): warning C4101: 'dwStyle' : unreferenced local variable
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\glwindow.cpp(192): warning C4101: 'dwExStyle' : unreferenced local variable
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\glwindow.cpp(698): warning C4995: 'wsprintf': name was marked as #pragma deprecated
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\glwindow.cpp(698): warning C4995: 'wsprintfW': name was marked as #pragma deprecated
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\glwindow.cpp(701): warning C4995: 'wsprintf': name was marked as #pragma deprecated
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\glwindow.cpp(701): warning C4995: 'wsprintfW': name was marked as #pragma deprecated
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\glwindow.cpp(743): warning C4995: 'wsprintf': name was marked as #pragma deprecated
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\glwindow.cpp(743): warning C4995: 'wsprintfW': name was marked as #pragma deprecated
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\glwindow.cpp(746): warning C4995: 'wsprintf': name was marked as #pragma deprecated
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\glwindow.cpp(746): warning C4995: 'wsprintfW': name was marked as #pragma deprecated
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\glwindow.cpp(990): warning C4995: 'wsprintf': name was marked as #pragma deprecated
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\glwindow.cpp(990): warning C4995: 'wsprintfW': name was marked as #pragma deprecated
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\glwindow.cpp(1084): warning C4995: 'wsprintf': name was marked as #pragma deprecated
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\glwindow.cpp(1084): warning C4995: 'wsprintfW': name was marked as #pragma deprecated
+         Db.cpp
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\db.cpp(23): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(371) : see declaration of 'sprintf'
+         CSkeletonBasics.cpp
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\cskeletonbasics.cpp(24): warning C4553: '==' : operator has no effect; did you intend '='?
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\cskeletonbasics.cpp(25): warning C4553: '==' : operator has no effect; did you intend '='?
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\cskeletonbasics.cpp(26): warning C4553: '==' : operator has no effect; did you intend '='?
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\cskeletonbasics.cpp(27): warning C4553: '==' : operator has no effect; did you intend '='?
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\cskeletonbasics.cpp(28): warning C4553: '==' : operator has no effect; did you intend '='?
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\cskeletonbasics.cpp(262): warning C4995: 'wsprintf': name was marked as #pragma deprecated
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\cskeletonbasics.cpp(262): warning C4995: 'wsprintfW': name was marked as #pragma deprecated
+         ControllerGL.cpp
+         Controller.cpp
+         Generating Code...
+     1>c:\users\vizsec\desktop\3dparallel_v3\first_app\tgaload.cpp(387): warning C4700: uninitialized local variable 'p' used
+       ResourceCompile:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /D _UNICODE /D UNICODE /l"0x0409" /nologo /fo"Debug\resource.res" resource.rc 
+     1>resource.rc(19): warning RC2182: duplicate dialog control ID 101
+         
+     1>resource.rc(21): warning RC2182: duplicate dialog control ID 101
+         
+       ManifestResourceCompile:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /nologo /fo"Debug\3DParallel.exe.embed.manifest.res" Debug\3DParallel_manifest.rc 
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\VizSec\Desktop\3DParallel_v3\Debug\3DParallel.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\Users\BrainRain\Dropbox\Research\NAVSEC\03_Experiment\01_code\FRE3DS\3DParallel\first_app\lib /LIBPATH:lib /LIBPATH:C:\WpdPack_4_1_2\WpdPack\Lib /LIBPATH:C:\WpdPack\Lib ws2_32.lib wpcap.lib comctl32.lib libcurl.lib Kinect10.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\3DParallel.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\VizSec\Desktop\3DParallel_v3\Debug\3DParallel.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\VizSec\Desktop\3DParallel_v3\Debug\3DParallel.lib" /MACHINE:X86 Debug\resource.res
+         Debug\3DParallel.exe.embed.manifest.res
+         Debug\Controller.obj
+         Debug\ControllerGL.obj
+         Debug\CSkeletonBasics.obj
+         Debug\Db.obj
+         Debug\glwindow.obj
+         Debug\main.obj
+         Debug\ModelGL.obj
+         Debug\Parser.obj
+         Debug\tgaload.obj
+         Debug\ViewGL.obj
+         Debug\AboutDialog.obj
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /out:"Debug\3DParallel.exe.embed.manifest" /manifest Debug\3DParallel.exe.intermediate.manifest
+         All outputs are up-to-date.
+       LinkEmbedManifest:
+         All outputs are up-to-date.
+         first_app.vcxproj -> C:\Users\VizSec\Desktop\3DParallel_v3\Debug\3DParallel.exe
+       FinalizeBuildStatus:
+         Deleting file "Debug\3DParallel.unsuccessfulbuild".
+         Touching "Debug\3DParallel.lastbuildstate".
+     1>Done Building Project "C:\Users\VizSec\Desktop\3DParallel_v3\first_app\first_app.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:09.60
