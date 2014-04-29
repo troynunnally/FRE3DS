@@ -798,7 +798,7 @@ void ModelGL::CameraHome(int mode)
 	   CROSSPROD(vd,vu,right);
 	   Normalise(&right);
 	   radians = dtheta * PI / 180.0;
-	   delta = dtheta * camera.focallength / 90.0;
+	   delta = .125 * camera.focallength / 90.0;		//.17 is the sensitivity
 
 	   camera.vp.x += iy * vu.x * delta;
 	   camera.vp.y += iy * vu.y * delta;

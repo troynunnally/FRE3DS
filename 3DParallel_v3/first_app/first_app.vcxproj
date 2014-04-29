@@ -89,6 +89,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Ideum\GestureworksCore\bindings\c++\gwc_c++\GestureWorksCore.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Ideum\GestureworksCore\bindings\c++\gwc_c++\GWCUtils.cpp" />
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="ControllerGL.cpp" />
     <ClCompile Include="CSkeletonBasics.cpp" />
@@ -102,6 +104,8 @@
     <ClCompile Include="AboutDialog.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Ideum\GestureworksCore\bindings\c++\gwc_c++\GestureWorksCore.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Ideum\GestureworksCore\bindings\c++\gwc_c++\GWCUtils.h" />
     <ClInclude Include="AboutDialog.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="ControllerGL.h" />

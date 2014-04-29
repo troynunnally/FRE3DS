@@ -18,7 +18,8 @@
 //About dialog bix
 #include "AboutDialog.h"
 #include "Db.h"
-
+#include "GestureWorksCore.h"
+#include <cmath>
 
 
 //#include "CSkeletonBasics.h"
@@ -34,6 +35,7 @@ PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = NULL;
 //Constructor
 GLWindow::GLWindow(HINSTANCE hInstance):
 	m_isRunning(false),		  //application is running
+	m_intersec(true),
 	m_model(NULL),			  // Initialize model to NULL
 	m_db(NULL),
 	m_hinstance(hInstance),   // application instance
@@ -41,6 +43,8 @@ GLWindow::GLWindow(HINSTANCE hInstance):
 	m_rotate_value_x(0),
 	m_rotate_value_y(0),
 	m_rotate_value_z(0),
+	m_translate_value_x(0),
+	m_translate_value_y(0),
 	m_zoom_value(0),
 	session_id(1),
     m_pD2DFactory(NULL),
@@ -58,9 +62,10 @@ GLWindow::GLWindow(HINSTANCE hInstance):
 	ZeroMemory(m_Points,sizeof(m_Points));      //Fills a block of memory, m_Points, with zeros.
 	//m_left_Hand_Point_old = NULL;
     g_LeftButtonPressed = false;	//Left Button Pressed
+	g_RightButtonPressed = false;
 	g_MiddleButtonPressed = false;	//Middle Button is Pressed
-	//debug = false;					//Debug is false
-	debug = true;
+	debug = true;					//Debug is false
+	//debug = true;
 	 m_hMainToolbar = NULL; //Init Main Toolbar window to NULL
 	 m_hPaintToolbar = NULL;//Init Paint toolbar window to NULL
 }
@@ -172,9 +177,19 @@ bool GLWindow::create(int width, int height, int bpp, bool fullscreen)
 	
     m_hdc = GetDC(m_hwnd);				  //Get the device context of the window
 
+	//Prepare windwo for touch
+	/*
+	if (!RegisterTouchWindow(m_hwnd, 0))
+	{
+		OutputDebugStringW(L"Registered for touch... \n");
+	}
+	*/
+
+	Setup_GestureWorks(m_hwnd);
+
+
     ShowWindow(m_hwnd, SW_SHOW);          // display the window
     UpdateWindow(m_hwnd);                 // update the window
-
 
     m_lastTime = GetTickCount() / 1000.0f; //Initialize the time
     return true;
@@ -311,7 +326,10 @@ void GLWindow::processEvents()
 	// Check for Kinect event (hEvents)
 	hEvents[0] = m_hNextSkeletonEvent;          //Next Skeleton Events
 
-	// Check to see if we have either a message (by passing in QS_ALLEVENTS)
+	//Update a gesture
+		update_gesture();
+
+		// Check to see if we have either a message (by passing in QS_ALLEVENTS)
         // Or a Kinect event (hEvents)
         // Update() will check for Kinect events individually, in case more than one are signalled
         // the return value indicates the event that caused the function to return
@@ -481,14 +499,44 @@ LRESULT GLWindow::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             HandleKeyPress(wParam);   // KeyPress function acts on the key passed in
             break;
         }
-   	case WM_LBUTTONDOWN:
+	
+	case WM_LBUTTONDOWN:
+		if(!m_intersec){
+			if (GetCursorPos(&g_OrigCursorPos))	//Retrieves the cursor's position, in screen coordinates.
+			{
+				RECT rt;						//defines the coordinates of the upper-left and lower-right corners of a rectangle.
+				GetWindowRect(hWnd, &rt);		//Retrieves the dimensions of the bounding rectangle of the specified window. 
+				g_OrigWndPos.x = rt.left;
+				g_OrigWndPos.y = rt.top;
+				g_LeftButtonPressed = true;
+				SetCapture(hWnd);							//Sets the mouse capture to the specified window, hWnd, belonging to the current thread
+				SetCursor(LoadCursor(NULL, IDC_SIZEALL));	//Sets the cursor shape.Four-pointed arrow pointing north, south, east, and west
+			
+				g_LastCursorPos.x = g_OrigCursorPos.x;
+				g_LastCursorPos.y = g_OrigCursorPos.y;
+
+				if (debug){
+				OutputDebugStringW(L"Left Button Pressed. \n");
+				}
+			}
+		}
+		return 0;
+	case WM_LBUTTONUP:
+		ReleaseCapture();						//Releases the mouse capture from a window in the current thread and restores normal mouse input processing.
+		g_LeftButtonPressed = false;
+		m_translate_value_x = 0;					//Clear the rotate X value
+		m_translate_value_y = 0;					//Clear the rotate Y value
+
+		return 0;
+	
+   	case WM_RBUTTONDOWN:
 		if (GetCursorPos(&g_OrigCursorPos))	//Retrieves the cursor's position, in screen coordinates.
 		{
 			RECT rt;						//defines the coordinates of the upper-left and lower-right corners of a rectangle.
 			GetWindowRect(hWnd, &rt);		//Retrieves the dimensions of the bounding rectangle of the specified window. 
 			g_OrigWndPos.x = rt.left;
 			g_OrigWndPos.y = rt.top;
-			g_LeftButtonPressed = true;
+			g_RightButtonPressed = true;
 			SetCapture(hWnd);							//Sets the mouse capture to the specified window, hWnd, belonging to the current thread
 			SetCursor(LoadCursor(NULL, IDC_SIZEALL));	//Sets the cursor shape.Four-pointed arrow pointing north, south, east, and west
 			
@@ -496,11 +544,11 @@ LRESULT GLWindow::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			g_LastCursorPos.y = g_OrigCursorPos.y;
 
 			if (debug){
-			OutputDebugStringW(L"Left Button Pressed. \n");
+			OutputDebugStringW(L"Right Button Pressed. \n");
 			}
 		}
 		return 0;
-	case WM_LBUTTONUP:
+	case WM_RBUTTONUP:
 		ReleaseCapture();						//Releases the mouse capture from a window in the current thread and restores normal mouse input processing.
 		
 		
@@ -652,12 +700,12 @@ LRESULT GLWindow::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		ReleaseCapture();						//Releases the mouse capture from a window in the current thread and restores normal mouse input processing.
 	return 0;
 	case WM_CAPTURECHANGED:						//Sent to the window that is losing the mouse capture.
-		g_LeftButtonPressed = (HWND)lParam == hWnd;	//A handle to the window gaining the mouse capture
+		g_RightButtonPressed = (HWND)lParam == hWnd;	//A handle to the window gaining the mouse capture
 		g_MiddleButtonPressed = (HWND)lParam == hWnd;	
 	return 0;
 
 	case WM_MOUSEMOVE:
-		if (g_LeftButtonPressed)
+		if (g_RightButtonPressed)
 		{
 			POINT pt;
 			if (GetCursorPos(&pt))
@@ -702,6 +750,44 @@ LRESULT GLWindow::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					OutputDebugStringW(buf);
 				}
 			}
+		}
+		if (g_LeftButtonPressed)
+		{
+			POINT pt;
+			if (GetCursorPos(&pt))
+			{
+
+
+				int dx,dy;
+				
+				dx = pt.x  - g_LastCursorPos.x;
+				dy = pt.y - g_LastCursorPos.y;
+
+				if (dx < 0)      dx = 1;//Mouse moved to the left
+				else if (dx > 0) dx = -1;//Mouse moved to the right
+				if (dy < 0)      dy = -1;//Mouse moved up
+				else if (dy > 0) dy =  1;//Mouse moved down
+				
+				getAttachedModel()->TranslateCamera(dx,dy,0);
+
+				m_translate_value_x	= m_translate_value_x+dx;
+				m_translate_value_x	= m_translate_value_y+dy;
+				//Position the Window
+				/*int wnd_x = g_OrigWndPos.x + 
+					(pt.x - g_OrigCursorPos.x);
+				int wnd_y = g_OrigWndPos.y + 
+					(pt.y - g_OrigCursorPos.y);
+				SetWindowPos(hWnd, NULL, wnd_x, 
+					wnd_y, 0, 0, SWP_NOACTIVATE|
+					SWP_NOOWNERZORDER|SWP_NOZORDER|
+					SWP_NOSIZE);*/
+				
+				//Set Last Cursor Position of the mouse
+				g_LastCursorPos.x=pt.x;
+				g_LastCursorPos.y=pt.y;
+
+			}
+
 		}
 		if (g_MiddleButtonPressed)
 		{
@@ -758,6 +844,173 @@ LRESULT GLWindow::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	//All messages that you don't want to handle should be passed to the DefWindowProc()
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
+
+
+std::map<int,gwc::Point> active_points;
+
+void GLWindow::Setup_GestureWorks(HWND hWnd) {
+
+
+	active_points = std::map<int,gwc::Point>();
+	
+	wchar_t  WindowName[256];
+
+	GetWindowText(hWnd, WindowName, 256);
+	std::wstring str(WindowName);
+
+	//Convert from wstring to string
+	int len;
+    int slength = (int)str.length() + 1;
+    len = WideCharToMultiByte(CP_ACP, 0, str.c_str(), slength, 0, 0, 0, 0); 
+    char* buf = new char[len];
+    WideCharToMultiByte(CP_ACP, 0, str.c_str(), slength, buf, len, 0, 0); 
+    std::string string_window_name(buf);
+    delete[] buf;
+
+	std::string strLibrary("C:\\GestureWorks\\GestureworksCore32.dll");
+	std::string strGML("C:\\GestureWorks\\basic_manipulation.gml");
+
+	if(loadGestureWorks("C:\\GestureWorks\\GestureworksCore32.dll")) { 
+		OutputDebugStringW(L"Error loading gestureworks dll");
+	}
+	
+	if(!loadGML("C:\\GestureWorks\\basic_manipulation.gml")) {
+		OutputDebugStringW(L"Could not find gml file");
+	}
+	
+	initializeGestureWorks(1920,1080);
+
+	if( !registerWindowForTouchByName(  string_window_name ) ) { 
+		OutputDebugStringW(L"Could not register target window for touch.");
+	}
+
+	registerTouchObject("p3d_window");
+
+	addGesture("p3d_window","n-drag");
+	addGesture("p3d_window","n-rotate");
+	addGesture("p3d_window","n-scale");
+	addGesture("p3d_window","n-flick");
+	
+
+}
+
+void GLWindow::update_gesture() {
+
+	wchar_t buf[2048];
+
+	processFrame();
+	
+	std::vector<gwc::PointEvent> point_events = consumePointEvents();
+
+	for(std::vector<gwc::PointEvent>::iterator event_it = point_events.begin(); event_it != point_events.end(); event_it++) {
+		switch(event_it->status) {
+			case gwc::TOUCHADDED:
+				//OutputDebugStringW(L"touch added..");
+				assignTouchPoint("p3d_window",event_it->point_id);
+			
+			case gwc::TOUCHUPDATE:
+				//OutputDebugStringW(L"touch updated..");
+				//If the point is being added, this will place it in our point map; the same line of code will update the point's
+				//position if it's already present, so we can use this command to handle new points as well as point updates
+				active_points[event_it->point_id] = gwc::Point(event_it->position.getX(),event_it->position.getY());
+				break;
+			case gwc::TOUCHREMOVED:
+				//Remove the point from the map
+				active_points.erase(event_it->point_id);
+				break;
+		}
+	}
+
+
+	//Interpret gesture events
+	std::vector<gwc::GestureEvent> gesture_events = consumeGestureEvents();
+
+	//wsprintf(buf,L"Gesture events = (%d) \n",gesture_events.size());
+		//		OutputDebugStringW(buf);
+	for(std::vector<gwc::GestureEvent>::iterator gesture_it = gesture_events.begin(); gesture_it != gesture_events.end(); gesture_it++) {
+	
+			if(gesture_it->gesture_id == "n-drag") {
+				float dx = gesture_it->values["drag_dx"];
+				float dy = gesture_it->values["drag_dy"];
+
+				if(debug){
+					swprintf(buf,L"drag = (%f, %f) \n",dx, dy);
+					OutputDebugStringW(buf);
+				}
+
+				//if (dx < 0)      dx = 1;//Mouse moved to the left
+				//else if (dx > 0) dx = -1;//Mouse moved to the right
+				//if (dy < 0)      dy = -1;//Mouse moved up
+				//else if (dy > 0) dy =  1;//Mouse moved down
+				
+				dx = (int)(dx+0.5);			//round dx
+				dy = (int)(dy+0.5);			//round dy
+
+				getAttachedModel()->TranslateCamera(-dx,dy,0);
+
+			}
+			else if(gesture_it->gesture_id == "n-rotate") {
+				//Rotation is about a specific point, so we need to do a coordinate transform and adjust
+				//not only the object's rotation, but it's x and y values as well
+				//float rotation_angle = degreesToRads(gesture_it->values["rotate_dtheta"]);
+				float rotation_angle = degreesToRads(gesture_it->values["rotate_dtheta"]);
+					
+				rotation_angle = (int)(rotation_angle*250);			//round dx
+				getAttachedModel()->RotateCamera(rotation_angle,0,0);
+
+
+				swprintf(buf,L"rotation_angle = (%f) \n",rotation_angle);
+				swprintf(buf,L"(x,y) = (%f, %f) \n", gesture_it->x, gesture_it->y);
+				OutputDebugStringW(buf);
+					//If we have points down, move the box; if there are no points, this is from gesture inertia and there is no
+					//center about which to rotate
+					/*if(gesture_it->n != 0) {
+						float temp_x = rotateAboutCenterX( logo1_dimensions.x, logo1_dimensions.y, gesture_it->x, gesture_it->y, rotation_angle);
+						float temp_y = rotateAboutCenterY( logo1_dimensions.x, logo1_dimensions.y, gesture_it->x, gesture_it->y, rotation_angle);
+					}*/
+
+
+				//logo1_dimensions.rotation = logo1_dimensions.rotation + rotation_angle;
+			}
+			else if(gesture_it->gesture_id == "n-scale") {
+				float dz = gesture_it->values["scale_dsx"];
+
+				dz = (int)(dz*250);			//round dx
+				getAttachedModel()->Zoom(dz);
+
+				if(debug){
+					swprintf(buf,L"zoom = (%f) \n",dz);
+					OutputDebugStringW(buf);
+				}
+				
+			}
+			else if(gesture_it->gesture_id == "n-flick") {
+				float swipe_dx = gesture_it->values["flick_dx"];
+				float swipe_dy = gesture_it->values["flick_dy"];
+
+				if(debug){
+					swprintf(buf,L"flick = (%f,%f) \n",swipe_dx,swipe_dy);
+					OutputDebugStringW(buf);
+				}
+				
+			}
+
+	}
+
+}
+
+/*****************************************************************************
+ GLWindow::degreesToRads
+
+Convert degrees to radians
+******************************************************************************/
+float GLWindow::degreesToRads(float degrees){
+	float pi = 3.141592653;
+	float radians = degrees*(pi/180.0);
+	return radians;
+}
+
+
 
 /*****************************************************************************
  GLWindow::HandleKeyPress
@@ -1185,6 +1438,7 @@ bool GLWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpcs)
 	SendMessage(GLWindow::m_hMainToolbar, TB_AUTOSIZE, 0, 0);
 	ShowWindow(GLWindow::m_hMainToolbar, TRUE);
 
+
 	return true;
 }
 
@@ -1518,7 +1772,7 @@ void GLWindow::headMovement(D2D1_POINT_2F headPoint){
 	
 	//Translate left
 	if(headPoint.x > m_head_Point_old.x){
-		getAttachedModel()->RotateCamera(-5,0,0);		// Translate camera left
+		getAttachedModel()->RotateCamera(-5,0,0);		// Rotate camera left
 	}
 
 	//Translate right

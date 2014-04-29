@@ -135,20 +135,26 @@ private:
 	int m_rotate_value_y;
 	int m_rotate_value_z;
 	int m_zoom_value;
+	int m_translate_value_x;
+	int m_translate_value_y;
 	int session_id;
 
 	bool g_LeftButtonPressed;
+	bool g_RightButtonPressed;
 	bool g_MiddleButtonPressed;
 
 	bool debug;
 
 
+	//Touch Interactions
+	void Setup_GestureWorks(HWND hWnd);
+	void update_gesture();
+	bool m_intersec;
+
+	float degreesToRads(float degrees);
 
 
-
-
-
-	    bool                    m_bSeatedMode;      //Seated Mode Boolean Value
+	 bool                    m_bSeatedMode;      //Seated Mode Boolean Value
     
 	//HANDLE hEvents[1];                     //Array of handle events
 	//int eventCount;				//Event Count
