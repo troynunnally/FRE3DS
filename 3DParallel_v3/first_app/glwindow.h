@@ -15,8 +15,11 @@
 
 const int eventCount = 1;
 
-class ModelGL; //Declare our ModelGL class
-class Db;
+#include "ModelGL.h";		     // Declare our ModelGL class
+#include "Db.h";				 // Declare the database class to connect to the web server
+#include "GestureEngine.h"		 // Declare class that reads and processes multi-touch gesture commands
+
+
 class GLWindow 
 {
 
@@ -33,6 +36,7 @@ public:
     void processEvents();
     void attachModel(ModelGL* model);
 	void attachDatabase(Db* database);
+	void attachGestureEngine(GestureEngine* gestureEngine);
     
 	bool createKinectWindow(HINSTANCE hInstance);									//Create the Kinect Window
 	//CSkeletonBasics* m_Skeleton;
@@ -86,12 +90,15 @@ public:
 
 
 private:
-    ModelGL* m_model;				//A link to the ModelGL program which is a OpenGL Program
+    ModelGL* m_model;					//A link to the ModelGL program which is a OpenGL Program
 	Db* m_db;	
-    bool m_isRunning;				//Is the window still running?
+	GestureEngine* m_gestureEngine;		//Gesture Engine
+    bool m_isRunning;					//Is the window still running?
     bool m_isFullscreen; 
 
-	//
+
+
+
     HWND m_hwnd;					//Window handle
 
 
@@ -144,7 +151,6 @@ private:
 	bool g_MiddleButtonPressed;
 
 	bool debug;
-
 
 	//Touch Interactions
 	void Setup_GestureWorks(HWND hWnd);

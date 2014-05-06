@@ -95,6 +95,7 @@
     <ClCompile Include="ControllerGL.cpp" />
     <ClCompile Include="CSkeletonBasics.cpp" />
     <ClCompile Include="Db.cpp" />
+    <ClCompile Include="GestureEngine.cpp" />
     <ClCompile Include="glwindow.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ModelGL.cpp" />
@@ -110,6 +111,7 @@
     <ClInclude Include="Controller.h" />
     <ClInclude Include="ControllerGL.h" />
     <ClInclude Include="Db.h" />
+    <ClInclude Include="GestureEngine.h" />
     <ClInclude Include="glext.h" />
     <ClInclude Include="glwindow.h" />
     <ClInclude Include="inaddr.h" />

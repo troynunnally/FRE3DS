@@ -298,6 +298,18 @@ void GLWindow::attachDatabase(Db* database)
     m_db = database;
 }
 
+
+/*****************************************************************************
+ GLWindow::attachGestureEngine
+Sets the Gesture Engine and attach it
+*****************************************************************************/
+void GLWindow::attachGestureEngine(GestureEngine* gestureEngine)
+{
+    m_gestureEngine = gestureEngine;
+}
+
+
+
 /*****************************************************************************
  GLWindow::attachExample(Example* example)
 Sets the OpenGL rendering and attach it to a new variable called m_example
@@ -496,7 +508,7 @@ LRESULT GLWindow::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     break;
 	case WM_KEYDOWN:             
         {
-            HandleKeyPress(wParam);   // KeyPress function acts on the key passed in
+            m_gestureEngine->HandleKeyPress(wParam);   // KeyPress function acts on the key passed in
             break;
         }
 	
@@ -551,7 +563,8 @@ LRESULT GLWindow::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_RBUTTONUP:
 		ReleaseCapture();						//Releases the mouse capture from a window in the current thread and restores normal mouse input processing.
 		
-		
+			
+									
 		if(m_rotate_value_x<15){
 			//Db database;						//Database Class
 			m_db->getrequest(session_id,"4");		//Perform a Get Request to NAVSEC (sid, iid)
@@ -623,79 +636,7 @@ LRESULT GLWindow::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		return 0;
 	case WM_MBUTTONUP:
 
-		if(m_zoom_value>=0 && m_zoom_value<10){
-			//Db database;						//Database Class
-			m_db->getrequest(session_id,"10");		//Perform a Get Request to NAVSEC (sid, iid)
-
-			if (debug){
-				OutputDebugStringW(L"Zoom Out 10. \n");
-			}
-
-		}
-		else if (m_zoom_value>=10 && m_zoom_value<20){
-			//Db database;						//Database Class
-			m_db->getrequest(session_id,"11");		//Perform a Get Request to NAVSEC (sid, iid)
-			
-			if (debug){
-				OutputDebugStringW(L"Zoom Out 20. \n");
-			}
-		}
-		else if (m_zoom_value>=20 && m_zoom_value<30){
-			//Db database;						//Database Class
-			m_db->getrequest(session_id,"12");		//Perform a Get Request to NAVSEC (sid, iid)
-			OutputDebugStringW(L"Zoom Out 30. \n");
-		}
-		else if (m_zoom_value>=30 && m_zoom_value<40){
-			//Db database;						//Database Class
-			m_db->getrequest(session_id,"13");		//Perform a Get Request to NAVSEC (sid, iid)
-			if (debug){
-				OutputDebugStringW(L"Zoom Out 40. \n");
-			}
-		}
-		else if (m_zoom_value>40){
-			//Db database;						//Database Class
-			m_db->getrequest(session_id,"14");		//Perform a Get Request to NAVSEC (sid, iid)
-			if (debug){
-				OutputDebugStringW(L"Zoom Out 50. \n");
-			}
-		}
-		else if (m_zoom_value>-10 && m_zoom_value<0){
-			//Db database;						//Database Class
-			m_db->getrequest(session_id,"15");		//Perform a Get Request to NAVSEC (sid, iid)
-			
-			if (debug){
-				OutputDebugStringW(L"Zoom In 10. \n");
-			}
-		}
-		else if (m_zoom_value>=-20 && m_zoom_value<-10){
-			//Db database;						//Database Class
-			m_db->getrequest(session_id,"16");		//Perform a Get Request to NAVSEC (sid, iid)
-			
-			if (debug){
-				OutputDebugStringW(L"Zoom In 20. \n");
-			}
-		}
-		else if (m_zoom_value>=-30 && m_zoom_value<-20){
-			//Db database;						//Database Class
-			m_db->getrequest(session_id,"17");		//Perform a Get Request to NAVSEC (sid, iid)
-			OutputDebugStringW(L"Zoom In 30. \n");
-		}
-		else if (m_zoom_value>=-40 && m_zoom_value<-30){
-			//Db database;						//Database Class
-			m_db->getrequest(session_id,"18");		//Perform a Get Request to NAVSEC (sid, iid)
-			if (debug){
-				OutputDebugStringW(L"Zoom In 40. \n");
-			}
-		}
-		else if (m_zoom_value<-40){
-			//Db database;						//Database Class
-			m_db->getrequest(session_id,"19");		//Perform a Get Request to NAVSEC (sid, iid)
-			if (debug){
-				OutputDebugStringW(L"Zoom In 50. \n");
-			}
-		}
-		
-		m_zoom_value = 0;					//Clear the Zoom value
+		m_gestureEngine->sendZoom();
 
 		ReleaseCapture();						//Releases the mouse capture from a window in the current thread and restores normal mouse input processing.
 	return 0;
@@ -794,44 +735,7 @@ LRESULT GLWindow::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			POINT pt;
 			if (GetCursorPos(&pt))
 			{
-
-
-				int dx,dy;
-				
-				dx = pt.x  - g_LastCursorPos.x;
-				dy = pt.y - g_LastCursorPos.y;
-
-				if (dx < 0)      dx = -1;//Mouse moved to the left
-			    else if (dx > 0) dx =  1;//Mouse moved to the right
-			    if (dy < 0)      dy = -1;//Mouse moved up
-			    else if (dy > 0) dy =  1;//Mouse moved down
-				
-				getAttachedModel()->Zoom(-dy);
-
-
-				m_zoom_value	= m_zoom_value+dy;
-				//Position the Window
-				/*int wnd_x = g_OrigWndPos.x + 
-				  (pt.x - g_OrigCursorPos.x);
-				int wnd_y = g_OrigWndPos.y + 
-				  (pt.y - g_OrigCursorPos.y);
-				SetWindowPos(hWnd, NULL, wnd_x, 
-				  wnd_y, 0, 0, SWP_NOACTIVATE|
-				  SWP_NOOWNERZORDER|SWP_NOZORDER|
-				  SWP_NOSIZE);*/
-				
-				//Set Last Cursor Position of the mouse
-				g_LastCursorPos.x=pt.x;
-				g_LastCursorPos.y=pt.y;
-
-				if (debug){
-					wchar_t buf[2048];
-					wsprintf(buf,L"g_OrigCursorPos = (%d, %d) \n",g_OrigCursorPos.x, g_OrigCursorPos.y);
-					OutputDebugStringW(buf);
-
-					wsprintf(buf,L"MovedCursorPos = (%d, %d) \n",pt.x, pt.y);
-					OutputDebugStringW(buf);
-				}
+				m_gestureEngine->ProcessZoom(pt, g_LastCursorPos);		//Use Gesture Engine to process zoom
 			}
 		}
 	return 0;
@@ -1012,125 +916,7 @@ float GLWindow::degreesToRads(float degrees){
 
 
 
-/*****************************************************************************
- GLWindow::HandleKeyPress
 
- Windows message handler
-******************************************************************************/
-void GLWindow::HandleKeyPress(UINT wParam)
-{
-    if (wParam == VK_ESCAPE) //If the escape key was pressed
-    {
-        DestroyWindow(m_hwnd); //Send a WM_DESTROY message
-    }
-	if (wParam == VK_LEFT) //If the LEFT ARROW key was pressed
-    {
-         getAttachedModel()->TranslateCamera(-1,0,0);		// Translate camera left
-    }
-	if (wParam == VK_RIGHT) //If the RIGHT ARROW key was pressed
-    {
-        getAttachedModel()->TranslateCamera(1,0,0);		//Translate camera right
-    }
-	if (wParam == VK_UP) //If the UP ARROW key was pressed
-    {
-        getAttachedModel()->TranslateCamera(0,1,0);		// Translate camera up
-    }
-	if (wParam == VK_DOWN) //If the DOWN ARROW key was pressed
-    {
-		getAttachedModel()->TranslateCamera(0,-1,0);		//Translate camera down
-    }
-    if (wParam == VK_RETURN)
-    {
-		getAttachedModel()->CameraHome(0);	//Translate camera down
-       
-    }
-	if (wParam == VK_NUMPAD0)
-    {
-		getAttachedModel()->AddLeftPlane(1);	//Add left plane
-		m_db->getrequest(session_id,"1");		//Perform a Get Request to NAVSEC (sid, iid)
-       
-    }
-	if (wParam == VK_NUMPAD1)
-    {
-		getAttachedModel()->AddAvgYTotalPacketsZ(1);	//Add left plane
-		m_db->getrequest(session_id,"20");		//Perform a Get Request to NAVSEC (sid, iid)
-		m_db->getrequest(session_id,"21");		//Perform a Get Request to NAVSEC (sid, iid)
-		m_db->getrequest(session_id,"22");		//Perform a Get Request to NAVSEC (sid, iid)
-       
-    }
-	if (wParam == 0x44) //D
-    {
-		//Toggle debug flag
-		if (!debug)
-		{
-			debug=true;
-		}
-		else
-		{
-			debug=false;
-		}  
-       
-    }
-	if (wParam == 0x48) //H
-    {
-		getAttachedModel()->CameraHome(0);	//Go home   
-		m_db->getrequest(session_id,"3");		//Perform a Get Request to NAVSEC (sid, iid)
-		
-		
-       
-    }
-	if (wParam == 0x49) //I
-    {
-		getAttachedModel()->TranslateCamera(0,1,0);	//Translate camera up
-       
-    }
-	if (wParam == 0x4A) //J
-    {
-		getAttachedModel()->TranslateCamera(-1,0,0);	//Translate camera left
-       
-    }
-		if (wParam == 0x4B) //K
-    {
-		getAttachedModel()->TranslateCamera(0,-1,0);	//Translate camera down
-       
-    }
-	if (wParam == 0x4C) //L
-    {
-		getAttachedModel()->TranslateCamera(1,0,0);	//Translate camera right
-       
-    }
-	if (wParam == 0x4D) //M
-    {
-		getAttachedModel()->TranslateCamera(0,0,-1);	//Translate camera away screen
-       
-    }
-	if (wParam == 0x4E) //N
-    {
-		getAttachedModel()->TranslateCamera(0,0,1);	//Translate camera into screen
-       
-    }
-	if (wParam == 0x4F) //O
-    {
-		getAttachedModel()->AdjustEyeSeparation(-1);	//Decrease Eye Separation 
-       
-    }
-	if (wParam == 0x50) //P
-    {
-		getAttachedModel()->AdjustEyeSeparation(1);	//Increase Eye Separation
-       
-    }
-	if (wParam == 0x51) //Q
-    {
-		getAttachedModel()->Zoom(1);	//Zoom
-       
-    }
-
-	if (wParam == 0x59) //Y
-    {
-		getAttachedModel()->AdjustFocalLength(-1);	//Decrease focal length
-       
-    }
-}
 
 /*****************************************************************************
  GLWindow::StaticWndProc

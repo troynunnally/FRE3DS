@@ -21,6 +21,7 @@ main.cpp
 
 #include "ModelGL.h"
 #include "Db.h"
+#include "GestureEngine.h"
 #include "NuiApi.h"
 #include "CSkeletonBasics.h"
 
@@ -81,6 +82,10 @@ int main(int argc, char** argv)
 	//Set the model in GLwindow to point to address of the model 
     programWindow.attachDatabase(&database);
 
+
+	//Attach our example to our gesture engine
+	GestureEngine gestureEngine(&model, &database);
+    programWindow.attachGestureEngine(&gestureEngine);
 	
 	
     //Attempt to register and create the window given the Width, Height, Bits per pixel, Fullscreen mode
