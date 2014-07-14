@@ -12,7 +12,7 @@ Db::Db(){
     Db::debug = TRUE;               //Enable debug
 }
 
-/*DROP A DATABASE*/
+/* A */
 /*---------------------------*/
 int Db::getrequest(int sid,char * iid)
 	{
@@ -21,6 +21,36 @@ int Db::getrequest(int sid,char * iid)
  
 		 char html_link[256];
 		sprintf(html_link, "http://localhost/navsec/index.php/navsec/add_interaction?sid=%u&iid=%s", sid, iid);
+
+		 curl = curl_easy_init();
+		  if(curl) {
+			curl_easy_setopt(curl, CURLOPT_URL, html_link);
+			/* example.com is redirected, so we tell libcurl to follow redirection */ 
+			curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+		 
+			/* Perform the request, res will get the return code */ 
+			res = curl_easy_perform(curl);
+			/* Check for errors */ 
+			if(res != CURLE_OK)
+			  fprintf(stderr, "curl_easy_perform() failed: %s\n",
+					  curl_easy_strerror(res));
+		 
+			/* always cleanup */ 
+			curl_easy_cleanup(curl);
+		  }
+		  return TRUE;
+	}
+
+
+/* A */
+/*---------------------------*/
+int Db::upload_time(int sid, double elaspTime)
+	{
+		 CURL *curl;
+		 CURLcode res;
+ 
+		 char html_link[256];
+		sprintf(html_link, "http://localhost/navsec/index.php/navsec/add_time?sid=%u&time=%s", sid, elaspTime);
 
 		 curl = curl_easy_init();
 		  if(curl) {

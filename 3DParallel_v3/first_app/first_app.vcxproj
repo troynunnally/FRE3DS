@@ -101,6 +101,7 @@
     <ClCompile Include="ModelGL.cpp" />
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="tgaload.cpp" />
+    <ClCompile Include="Timer.cpp" />
     <ClCompile Include="ViewGL.cpp" />
     <ClCompile Include="AboutDialog.cpp" />
   </ItemGroup>
@@ -121,6 +122,7 @@
     <ClInclude Include="CSkeletonBasics.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="tgaload.h" />
+    <ClInclude Include="Timer.h" />
     <ClInclude Include="ViewGL.h" />
     <ClInclude Include="wglext.h" />
     <ClInclude Include="resource.h" />

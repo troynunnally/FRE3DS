@@ -5,6 +5,7 @@
 #include <vector>		//Needed for Vertex Buffer Object (VBO)
 #include "Parser.h"
 
+
 //Use the vector space within the standard library (std)
 using std::vector;
 
@@ -78,6 +79,8 @@ public:
 	void Zoom(int);							//Zooms the camera in the direction of vd
 	void AddLeftPlane(int number);			//Add add a left plane
 	void AddAvgYTotalPacketsZ(int number);
+
+	
 	
 
 
@@ -99,7 +102,7 @@ private:
 	float xspeed;			// X Rotation Speed
 	float yspeed;			// Y Rotation Speed
 	float ratio;			//Ratio of Width/Height
-	float	z;				// Depth Into The Screen
+	float z;				// Depth Into The Screen
 	
 	/*Flags*/
 	int stereo;			//Stereoscopic 3D Flag

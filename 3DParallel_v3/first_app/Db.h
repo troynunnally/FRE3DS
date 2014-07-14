@@ -58,6 +58,7 @@ public:
     int update();           //Update a row
     int closeconnection();  //Close a connection
 	int getrequest(int sid, char * iid); 
+	int upload_time(int sid, double elaspTime);
 	void shutdown();
     
 

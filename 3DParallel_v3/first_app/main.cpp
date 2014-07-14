@@ -87,7 +87,6 @@ int main(int argc, char** argv)
 	GestureEngine gestureEngine(&model, &database);
     programWindow.attachGestureEngine(&gestureEngine);
 	
-	
     //Attempt to register and create the window given the Width, Height, Bits per pixel, Fullscreen mode
 	//Here is where it fills out class structure, register the class, create window, display window
     if (!programWindow.create(windowWidth, windowHeight, windowBPP, windowFullscreen))

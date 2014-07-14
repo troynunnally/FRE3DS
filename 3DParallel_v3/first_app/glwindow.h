@@ -18,6 +18,7 @@ const int eventCount = 1;
 #include "ModelGL.h";		     // Declare our ModelGL class
 #include "Db.h";				 // Declare the database class to connect to the web server
 #include "GestureEngine.h"		 // Declare class that reads and processes multi-touch gesture commands
+#include "Timer.h"      /* Timer Class */
 
 
 class GLWindow 
@@ -38,7 +39,11 @@ public:
 	void attachDatabase(Db* database);
 	void attachGestureEngine(GestureEngine* gestureEngine);
     
-	bool createKinectWindow(HINSTANCE hInstance);									//Create the Kinect Window
+	bool setupVisualizationWindow(HWND hWnd, WPARAM wParam, LPARAM lParam);		//Create the Visualization window that contains P3D
+	
+	bool createKinectWindow(HINSTANCE hInstance);								//Create the Kinect Window
+
+
 	//CSkeletonBasics* m_Skeleton;
     HANDLE hEvents[eventCount];                     //Array of handle events
 
@@ -90,14 +95,14 @@ public:
 
 
 private:
+	Timer* aTimer;
+
     ModelGL* m_model;					//A link to the ModelGL program which is a OpenGL Program
 	Db* m_db;	
 	GestureEngine* m_gestureEngine;		//Gesture Engine
     bool m_isRunning;					//Is the window still running?
     bool m_isFullscreen; 
-
-
-
+	bool m_isKinect;
 
     HWND m_hwnd;					//Window handle
 
@@ -135,16 +140,7 @@ private:
 	POINT g_OrigCursorPos;			
 	
 	//Location of the Mouse cursor
-	POINT g_LastCursorPos;			//Last Location of the Mouse cursor
 	POINT g_OrigWndPos;				//Location fot the application window
-	
-	int m_rotate_value_x;
-	int m_rotate_value_y;
-	int m_rotate_value_z;
-	int m_zoom_value;
-	int m_translate_value_x;
-	int m_translate_value_y;
-	int session_id;
 
 	bool g_LeftButtonPressed;
 	bool g_RightButtonPressed;
@@ -153,9 +149,10 @@ private:
 	bool debug;
 
 	//Touch Interactions
+	bool m_isIntersec;
 	void Setup_GestureWorks(HWND hWnd);
 	void update_gesture();
-	bool m_intersec;
+	
 
 	float degreesToRads(float degrees);
 
@@ -252,8 +249,6 @@ private:
     /// </summary>
     /// <param name="szMessage">message to display</param>
     void                    SetStatusMessage(WCHAR* szMessage);
-
-
 
 
 };

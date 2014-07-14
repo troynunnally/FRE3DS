@@ -8,6 +8,7 @@
 
 //Add icon
 IDI_APP_ICON ICON DISCARDABLE "res\\draw.ico"
+IDB_STOP_ICON ICON DISCARDABLE "res\\Yes.ico"
 
 // About window
 IDD_ABOUT DIALOG DISCARDABLE 32, 32, 180, 100

@@ -24,6 +24,7 @@
 #include "tgaload.h"		//Used to load tga file
 #include "ModelGL.h"
 
+
 //Initialized stuff for the VBO Located in glext.h
 PFNGLGENBUFFERSARBPROC glGenBuffers = NULL;
 PFNGLBINDBUFFERPROC glBindBuffer = NULL;
@@ -42,7 +43,7 @@ ModelGL::ModelGL() : m_rotationAngle(0.0f),
 					z(0.0f), 
 					leftplane(0),
 					avgYtotalZ(0),
-					stereo(true), 
+					stereo(false), 
 					debug(false), 
 					dtheta(1)			//Used to Rotate the camera by one degree
 {
@@ -109,13 +110,22 @@ bool ModelGL::init()
 
 	//ModelGL::loadPcapFile("p01_port_confusion_DOS_and_scan.pcap");
 
-	ModelGL::loadPcapFile("pcap/ftp_disguise.pcap");
+	//WARMUP
+	ModelGL::loadPcapFile("pcap/ftp_disguise.pcap");								//works
+	//ModelGL::loadPcapFile("pcap/p01_port_confusion_DOS_and_scan.pcap");			//show artifacts			
+	//ModelGL::loadPcapFile("pcap/p03_port_source_confusion_r2.pcap");				//works
+	//ModelGL::loadPcapFile("pcap/p05_test.pcap.pcap");								//not workig
+	//ModelGL::loadPcapFile("pcap/p04_WWA_r2.pcap");
 	
-	
+
+
 
     //Return success
     return true;
 }
+
+
+
 
 /************************************************************************************
 * Load Textures
@@ -492,7 +502,6 @@ void ModelGL::clearScreen()
 	glLoadIdentity();
 
 
-
 }
 
 /************************************************************************************
@@ -823,3 +832,4 @@ void ModelGL::CameraHome(int mode)
 	   camera.pr.z += iz * vd.z * delta;
 
 	}
+

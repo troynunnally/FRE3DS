@@ -5,6 +5,7 @@
      /* An icon for an .exe file si the first icon*/
    
 #define IDI_APP_ICON 1
+#define IDB_STOP_ICON 2
 
 //About 
 #define IDD_ABOUT 100
@@ -44,3 +45,4 @@
 #define IDM_FILE_EXIT 205
 #define IDM_HELP_ABOUT 206
 
+#define ID_EDITOR_STOP 207

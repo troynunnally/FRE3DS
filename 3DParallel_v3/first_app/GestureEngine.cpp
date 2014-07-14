@@ -9,6 +9,7 @@
 
 // C RunTime header files
 #include <assert.h>
+#include <process.h>				//for the system command
 #define ASSERT assert
 
 #define _USE_MATH_DEFINES // has to be defined to activate definition of M_PI
@@ -46,7 +47,6 @@ GestureEngine::~GestureEngine()
 //      lParam      message parameter (message-specific)
 LRESULT GestureEngine::WndProc(HWND hWnd, WPARAM /* wParam */, LPARAM lParam)
 {
-	
 				
 	return TRUE;
 }
@@ -59,9 +59,10 @@ void GestureEngine::ProcessPressAndTap()
 }
 
 // Two finger tap command
-void GestureEngine::ProcessTwoFingerTap()
+void GestureEngine::ProcessFiveFingerTap()
 {
-    OutputDebugStringW(L"ProcessTwoFingerTap");
+	_model->AddLeftPlane(1);			//Add left plane
+	_model->AddAvgYTotalPacketsZ(1);	//Total Avg Packets Y  vs. TotalPackets Z  left plane
 }
 
 // Zoom command
@@ -69,16 +70,13 @@ void GestureEngine::ProcessTwoFingerTap()
 //      dZoomFactor - scaling factor of zoom in/out
 //      lZx         - x-coordinate of zoom center
 //      lZy         - y-coordinate of zoom center
-void GestureEngine::ProcessZoom(POINT g_CurrentCursorPos, POINT g_LastCursorPos)
+void GestureEngine::ProcessZoom(POINT g_CurrentCursorPos)
 {
 	
-	int dx,dy;
+	int dy;
 				
-	dx = g_CurrentCursorPos.x  - g_LastCursorPos.x;		//Change in x direction
 	dy = g_CurrentCursorPos.y - g_LastCursorPos.y;		//Change in y direction
 
-	if (dx < 0)      dx = -1;	//Mouse moved to the left
-	else if (dx > 0) dx =  1;	//Mouse moved to the right
 	if (dy < 0)      dy = -1;	//Mouse moved up
 	else if (dy > 0) dy =  1;	//Mouse moved down
 				
@@ -87,8 +85,8 @@ void GestureEngine::ProcessZoom(POINT g_CurrentCursorPos, POINT g_LastCursorPos)
 	m_zoom_value	= m_zoom_value+dy;
 				
 	//Set Last Cursor Position of the mouse
-	g_LastCursorPos.x=g_LastCursorPos.x;
-	g_LastCursorPos.y=g_LastCursorPos.y;
+	g_LastCursorPos.x=g_CurrentCursorPos.x;
+	g_LastCursorPos.y=g_CurrentCursorPos.y;
 
 	if (debug){
 		wchar_t buf[2048];
@@ -103,6 +101,118 @@ void GestureEngine::ProcessZoom(POINT g_CurrentCursorPos, POINT g_LastCursorPos)
 
 }
 
+
+void GestureEngine::ProcessTenFingerHold()
+{
+		system("wireshark.exe -r pcap/ftp_disguise.pcap");
+}
+
+
+
+void GestureEngine::ProcessFourFingerHold()
+{
+		system("wireshark.exe -r pcap/ftp_disguise.pcap -d \"ip.src==57.25.6.30&&tcp.srcport>50331&&tcp.srcport<50342\"");
+}
+
+
+
+// Translate command
+// in:
+//      dAngle  - angle of rotation
+//      g_CurrentCursorPos     - x-coordinate of the center of rotation
+//      g_LastCursorPos     - y-coordinate of the center of rotation
+void GestureEngine::ProcessTranslate(POINT g_CurrentCursorPos)
+{
+     OutputDebugStringW(L"ProcessTranslate");
+	 
+	 int dx,dy;
+				
+	dx = g_CurrentCursorPos.x  - g_LastCursorPos.x;		//Change in x direction
+	dy = g_CurrentCursorPos.y - g_LastCursorPos.y;		//Change in y direction
+
+	if (dx < 0)      dx = 1;	//Mouse moved to the left
+	else if (dx > 0) dx =  -1;	//Mouse moved to the right
+	if (dy < 0)      dy = -1;	//Mouse moved up
+	else if (dy > 0) dy =  1;	//Mouse moved down
+		
+	//dx = dx/2000;
+	//dy = dy/2000;
+	_model->TranslateCamera(dx,dy,0);			//perform Translate in OpenGL
+
+	m_translate_value_x	= m_translate_value_x+dx;	//
+	m_translate_value_y	= m_translate_value_y+dy;	//
+				
+
+	//Set Last Cursor Position of the mouse
+	g_LastCursorPos.x=g_CurrentCursorPos.x;
+	g_LastCursorPos.y=g_CurrentCursorPos.y;
+
+	if (debug){
+		wchar_t buf[2048];
+		wsprintf(buf,L"dx, dy = (%d,%d) \n",dx,dy);
+		OutputDebugStringW(buf);
+
+		//wsprintf(buf,L"MovedCursorPos = (%d, %d) \n",g_CurrentCursorPos.x, g_CurrentCursorPos.y);
+		//OutputDebugStringW(buf);
+	}
+
+
+
+
+}
+
+
+
+// Translate command for mouse
+// in:
+//      dAngle  - angle of rotation
+//      g_CurrentCursorPos     - x-coordinate of the center of rotation
+//      g_LastCursorPos     - y-coordinate of the center of rotation
+
+void GestureEngine::ProcessMouseTranslate(POINT g_CurrentCursorPos)
+{
+     OutputDebugStringW(L"ProcessTranslate");
+	 
+	 int dx,dy;
+				
+	dx = g_CurrentCursorPos.x  - g_LastCursorPos.x;		//Change in x direction
+	dy = g_CurrentCursorPos.y - g_LastCursorPos.y;		//Change in y direction
+
+	if (dx < 0)      dx = 10;	//Mouse moved to the left
+	else if (dx > 0) dx =  -10;	//Mouse moved to the right
+	if (dy < 0)      dy = -10;	//Mouse moved up
+	else if (dy > 0) dy =  10;	//Mouse moved down
+		
+	//dx = dx/2000;
+	//dy = dy/2000;
+	_model->TranslateCamera(dx,dy,0);			//perform Translate in OpenGL
+
+	m_translate_value_x	= m_translate_value_x+dx;	//
+	m_translate_value_y	= m_translate_value_y+dy;	//
+				
+
+	//Set Last Cursor Position of the mouse
+	g_LastCursorPos.x=g_CurrentCursorPos.x;
+	g_LastCursorPos.y=g_CurrentCursorPos.y;
+
+	if (debug){
+		wchar_t buf[2048];
+		wsprintf(buf,L"dx, dy = (%d,%d) \n",dx,dy);
+		OutputDebugStringW(buf);
+
+		//wsprintf(buf,L"MovedCursorPos = (%d, %d) \n",g_CurrentCursorPos.x, g_CurrentCursorPos.y);
+		//OutputDebugStringW(buf);
+	}
+
+
+
+
+}
+
+
+
+
+
 // Pan/Inertia command
 // in:
 //      ldx - increment/decrement in x direction
@@ -112,18 +222,90 @@ void GestureEngine::ProcessMove(const LONG ldx, const LONG ldy)
    OutputDebugStringW(L"ProcessMove");
 }
 
+
+
+// Rotate command for mouse
+// in:
+//      dAngle  - angle of rotation
+//      lOx     - x-coordinate of the center of rotation
+//      lOy     - y-coordinate of the center of rotation
+void GestureEngine::ProcessMouseRotate(POINT g_CurrentCursorPos)
+{
+     OutputDebugStringW(L"ProcessRotate");
+	 int dx,dy;
+				
+	dx = g_CurrentCursorPos.x - g_LastCursorPos.x;
+	dy = g_CurrentCursorPos.y - g_LastCursorPos.y;
+
+	if (dx < 0)      dx = -1;//Mouse moved to the left
+	else if (dx > 0) dx =  1;//Mouse moved to the right
+	if (dy < 0)      dy = -1;//Mouse moved up
+	else if (dy > 0) dy =  1;//Mouse moved down
+	
+	_model->RotateCamera(-dx,dy,0);
+
+	m_rotate_value_x	= m_rotate_value_x+dx;
+	m_rotate_value_y	= m_rotate_value_y+dy;
+				
+	//Set Last Cursor Position of the mouse
+	g_LastCursorPos.x=g_CurrentCursorPos.x;
+	g_LastCursorPos.y=g_CurrentCursorPos.y;
+
+	if (debug){
+		wchar_t  buf[2048];
+		wsprintf(buf,L"g_OrigCursorPos = (%d, %d) \n",g_LastCursorPos.x, g_LastCursorPos.y);
+		OutputDebugStringW(buf);
+
+		wsprintf(buf,L"MovedCursorPos = (%d, %d) \n",g_CurrentCursorPos.x, g_CurrentCursorPos.y);
+		OutputDebugStringW(buf);
+	}
+}
+
+
 // Rotate command
 // in:
 //      dAngle  - angle of rotation
 //      lOx     - x-coordinate of the center of rotation
 //      lOy     - y-coordinate of the center of rotation
-void GestureEngine::ProcessRotate(const double dAngle, const LONG lOx, const LONG lOy)
+void GestureEngine::ProcessRotate(POINT g_CurrentCursorPos)
 {
      OutputDebugStringW(L"ProcessRotate");
+	 int dx,dy;
+				
+	dx = g_CurrentCursorPos.x - g_LastCursorPos.x;
+	dy = g_CurrentCursorPos.x - g_LastCursorPos.y;
+
+	if (dx < 0)      dx = -1;//Mouse moved to the left
+	else if (dx > 0) dx =  1;//Mouse moved to the right
+	if (dy < 0)      dy = -1;//Mouse moved up
+	else if (dy > 0) dy =  1;//Mouse moved down
+	
+	dy = 0;
+	_model->RotateCamera(-dx,dy,0);
+
+	m_rotate_value_x	= m_rotate_value_x+dx;
+	m_rotate_value_y	= m_rotate_value_y+dy;
+				
+	//Set Last Cursor Position of the mouse
+	g_LastCursorPos.x=g_CurrentCursorPos.x;
+	g_LastCursorPos.y=g_CurrentCursorPos.y;
+
+	if (debug){
+		wchar_t  buf[2048];
+		wsprintf(buf,L"g_OrigCursorPos = (%d, %d) \n",g_LastCursorPos.x, g_LastCursorPos.y);
+		OutputDebugStringW(buf);
+
+		wsprintf(buf,L"MovedCursorPos = (%d, %d) \n",g_CurrentCursorPos.x, g_CurrentCursorPos.y);
+		OutputDebugStringW(buf);
+	}
 }
 
-
-
+void GestureEngine::setCursorPosition(POINT g_OrigCursorPos)
+{
+	//Set Last Cursor Position of the mouse
+	g_LastCursorPos.x=g_OrigCursorPos.x;
+	g_LastCursorPos.y=g_OrigCursorPos.y;
+}
 
 /*****************************************************************************
  GestureEngine::HandleKeyPress
@@ -174,14 +356,14 @@ void GestureEngine::HandleKeyPress(UINT wParam)
 	if (wParam == 0x44) //D
     {
 		//Toggle debug flag
-		/*if (!debug)
+		if (!debug)
 		{
 			debug=true;
 		}
 		else
 		{
 			debug=false;
-		} */ 
+		}  
        
     }
 	if (wParam == 0x48) //H
@@ -357,4 +539,66 @@ void GestureEngine::sendZoom(){
 		}
 		
 		m_zoom_value = 0;					//Clear the Zoom value
-	}
+}
+
+
+
+void GestureEngine::sendRotate(){
+								
+		if(m_rotate_value_x<15){
+			//Db database;						//Database Class
+			_db->getrequest(session_id,"4");		//Perform a Get Request to NAVSEC (sid, iid)
+
+			if (debug){
+				OutputDebugStringW(L"Rotate 15. \n");
+			}
+
+		}
+		else if (m_rotate_value_x>=15 && m_rotate_value_x<30){
+			//Db database;						//Database Class
+			_db->getrequest(session_id,"5");		//Perform a Get Request to NAVSEC (sid, iid)
+			
+			if (debug){
+				OutputDebugStringW(L"Rotate 30. \n");
+			}
+		}
+		else if (m_rotate_value_x>=30 && m_rotate_value_x<45){
+			//Db database;						//Database Class
+			_db->getrequest(session_id,"6");		//Perform a Get Request to NAVSEC (sid, iid)
+			OutputDebugStringW(L"Rotate 45. \n");
+		}
+		else if (m_rotate_value_x>=45 && m_rotate_value_x<60){
+			//Db database;						//Database Class
+			_db->getrequest(session_id,"7");		//Perform a Get Request to NAVSEC (sid, iid)
+			if (debug){
+				OutputDebugStringW(L"Rotate 60. \n");
+			}
+		}
+		else if (m_rotate_value_x>=60 && m_rotate_value_x<75){
+			//Db database;						//Database Class
+			_db->getrequest(session_id,"8");		//Perform a Get Request to NAVSEC (sid, iid)
+			if (debug){
+				OutputDebugStringW(L"Rotate 75. \n");
+			}
+		}
+		else if (m_rotate_value_x>=75 && m_rotate_value_x<90){
+			//Db database;						//Database Class
+			_db->getrequest(session_id,"9");		//Perform a Get Request to NAVSEC (sid, iid)
+			if (debug){
+				OutputDebugStringW(L"Rotate 90. \n");
+			}
+		}
+
+		m_rotate_value_x = 0;					//Clear the rotate X value
+		m_rotate_value_y = 0;					//Clear the rotate Y value
+}
+
+
+
+void GestureEngine::sendTranslate(){
+
+
+	//Clear Translate Value
+	m_translate_value_x = 0;	// translate x direction counter
+	m_translate_value_y = 0;	// translate y direction counter = 0;
+}

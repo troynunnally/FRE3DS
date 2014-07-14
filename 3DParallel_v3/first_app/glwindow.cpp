@@ -35,18 +35,19 @@ PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = NULL;
 //Constructor
 GLWindow::GLWindow(HINSTANCE hInstance):
 	m_isRunning(false),		  //application is running
-	m_intersec(true),
+	m_isIntersec(false),
+	m_isKinect(false),
 	m_model(NULL),			  // Initialize model to NULL
 	m_db(NULL),
 	m_hinstance(hInstance),   // application instance
 	m_lastTime(0),
-	m_rotate_value_x(0),
-	m_rotate_value_y(0),
-	m_rotate_value_z(0),
-	m_translate_value_x(0),
-	m_translate_value_y(0),
-	m_zoom_value(0),
-	session_id(1),
+	//m_rotate_value_x(0),
+	//m_rotate_value_y(0),
+	//m_rotate_value_z(0),
+	//m_translate_value_x(0),
+	//m_translate_value_y(0),
+	//m_zoom_value(0),
+	//session_id(1),F
     m_pD2DFactory(NULL),
     m_hNextSkeletonEvent(INVALID_HANDLE_VALUE),
     m_pSkeletonStreamHandle(INVALID_HANDLE_VALUE),
@@ -66,8 +67,8 @@ GLWindow::GLWindow(HINSTANCE hInstance):
 	g_MiddleButtonPressed = false;	//Middle Button is Pressed
 	debug = true;					//Debug is false
 	//debug = true;
-	 m_hMainToolbar = NULL; //Init Main Toolbar window to NULL
-	 m_hPaintToolbar = NULL;//Init Paint toolbar window to NULL
+	m_hMainToolbar = NULL; //Init Main Toolbar window to NULL
+	m_hPaintToolbar = NULL;//Init Paint toolbar window to NULL
 }
 
 /*****************************************************************************
@@ -185,17 +186,82 @@ bool GLWindow::create(int width, int height, int bpp, bool fullscreen)
 	}
 	*/
 
-	Setup_GestureWorks(m_hwnd);
+	/*Setup InterSec if enabled*/
+	if(m_isIntersec){
+		Setup_GestureWorks(m_hwnd);
+	}
+
 
 
     ShowWindow(m_hwnd, SW_SHOW);          // display the window
     UpdateWindow(m_hwnd);                 // update the window
 
-    m_lastTime = GetTickCount() / 1000.0f; //Initialize the time
+	/*START TIMER*/
+	   aTimer = new Timer(m_db); 
+       aTimer->start();
+	   Sleep(1000);
+	   //aTimer->stop();
+	   //aTimer->uploadTime();
+		//m_lastTime = GetTickCount() / 1000.0f; //Initialize the time
+
     return true;
 }
 
 
+
+/*****************************************************************************
+GLWindow::createVisualizationWindow()
+Creates the visualization window
+*****************************************************************************/
+bool GLWindow::setupVisualizationWindow(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+
+	    m_hdc = GetDC(hWnd);		//Get the device context handle
+        setupPixelFormat();			//Set up the pixel format
+
+		//Create the UI Elements
+		if (!GLWindow::OnCreate(hWnd, (LPCREATESTRUCT)lParam))
+        {
+			std::cerr << "Status Bar did not create" << std::endl;
+  
+        }
+        //Set the version that we want, in this case 3.0
+        int attribs[] = {
+	        WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+	        WGL_CONTEXT_MINOR_VERSION_ARB, 0,
+        0}; //zero indicates the end of the array
+
+        //Create temporary context so we can get a pointer to the function
+        HGLRC tmpContext = wglCreateContext(m_hdc);
+        //Make it current context
+        wglMakeCurrent(m_hdc, tmpContext);
+
+        //Get the function pointer for opengl 3.0 context
+        wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC) wglGetProcAddress("wglCreateContextAttribsARB");
+
+        //If this is NULL then OpenGL 3.0 is not supported
+        if (!wglCreateContextAttribsARB)
+        {
+			std::cerr << "OpenGL 3.0 is not supported, falling back to GL 2.1" << std::endl;
+            m_hglrc = tmpContext;
+        } 
+		else
+		{
+			// Create an OpenGL 3.0 context using the new function
+			m_hglrc = wglCreateContextAttribsARB(m_hdc, 0, attribs);
+			//Delete the temporary context
+			wglDeleteContext(tmpContext);
+		}
+
+        //Make the GL3 context current
+        wglMakeCurrent(m_hdc, m_hglrc);
+
+        m_isRunning = true; //Mark our window as running
+
+		
+    return true;
+
+}
 
 /*****************************************************************************
 GLWindow::createKinectWindow()
@@ -338,8 +404,10 @@ void GLWindow::processEvents()
 	// Check for Kinect event (hEvents)
 	hEvents[0] = m_hNextSkeletonEvent;          //Next Skeleton Events
 
-	//Update a gesture
-		update_gesture();
+	//Update a gesture if intersec is enabled
+		if(m_isIntersec){
+			update_gesture();
+		}
 
 		// Check to see if we have either a message (by passing in QS_ALLEVENTS)
         // Or a Kinect event (hEvents)
@@ -438,49 +506,12 @@ LRESULT GLWindow::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
     case WM_CREATE:         // window creation
     {
-        m_hdc = GetDC(hWnd);		//Get the device context handle
-        setupPixelFormat();			//Set up the pixel format
+		
+		GLWindow::setupVisualizationWindow(hWnd, wParam, lParam);
 
-		//Create the UI Elements
-		if (!GLWindow::OnCreate(hWnd, (LPCREATESTRUCT)lParam))
-        {
-			std::cerr << "Status Bar did not create" << std::endl;
-  
-        }
-        //Set the version that we want, in this case 3.0
-        int attribs[] = {
-	        WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
-	        WGL_CONTEXT_MINOR_VERSION_ARB, 0,
-        0}; //zero indicates the end of the array
-
-        //Create temporary context so we can get a pointer to the function
-        HGLRC tmpContext = wglCreateContext(m_hdc);
-        //Make it current context
-        wglMakeCurrent(m_hdc, tmpContext);
-
-        //Get the function pointer for opengl 3.0 context
-        wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC) wglGetProcAddress("wglCreateContextAttribsARB");
-
-        //If this is NULL then OpenGL 3.0 is not supported
-        if (!wglCreateContextAttribsARB)
-        {
-			std::cerr << "OpenGL 3.0 is not supported, falling back to GL 2.1" << std::endl;
-            m_hglrc = tmpContext;
-        } 
-		else
-		{
-			// Create an OpenGL 3.0 context using the new function
-			m_hglrc = wglCreateContextAttribsARB(m_hdc, 0, attribs);
-			//Delete the temporary context
-			wglDeleteContext(tmpContext);
+		if(m_isKinect){
+			GLWindow::createKinectWindow(m_hinstance);		//Create Dialog
 		}
-
-        //Make the GL3 context current
-        wglMakeCurrent(m_hdc, m_hglrc);
-
-        m_isRunning = true; //Mark our window as running
-
-		GLWindow::createKinectWindow(m_hinstance);		//Create Dialog
 		   //Start an instance of the CSkeletonBasics Class
     }
     break;
@@ -508,139 +539,50 @@ LRESULT GLWindow::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     break;
 	case WM_KEYDOWN:             
         {
-            m_gestureEngine->HandleKeyPress(wParam);   // KeyPress function acts on the key passed in
+            m_gestureEngine->HandleKeyPress(wParam);    // KeyPress function acts on the key passed in
             break;
         }
 	
 	case WM_LBUTTONDOWN:
-		if(!m_intersec){
-			if (GetCursorPos(&g_OrigCursorPos))	//Retrieves the cursor's position, in screen coordinates.
-			{
-				RECT rt;						//defines the coordinates of the upper-left and lower-right corners of a rectangle.
-				GetWindowRect(hWnd, &rt);		//Retrieves the dimensions of the bounding rectangle of the specified window. 
-				g_OrigWndPos.x = rt.left;
-				g_OrigWndPos.y = rt.top;
-				g_LeftButtonPressed = true;
-				SetCapture(hWnd);							//Sets the mouse capture to the specified window, hWnd, belonging to the current thread
-				SetCursor(LoadCursor(NULL, IDC_SIZEALL));	//Sets the cursor shape.Four-pointed arrow pointing north, south, east, and west
-			
-				g_LastCursorPos.x = g_OrigCursorPos.x;
-				g_LastCursorPos.y = g_OrigCursorPos.y;
-
-				if (debug){
-				OutputDebugStringW(L"Left Button Pressed. \n");
-				}
-			}
+		if(!m_isIntersec){
+			g_LeftButtonPressed = true;					// Set left button as pressed		
+			m_gestureEngine->setCursorPosition(g_OrigCursorPos);
 		}
 		return 0;
 	case WM_LBUTTONUP:
-		ReleaseCapture();						//Releases the mouse capture from a window in the current thread and restores normal mouse input processing.
-		g_LeftButtonPressed = false;
-		m_translate_value_x = 0;					//Clear the rotate X value
-		m_translate_value_y = 0;					//Clear the rotate Y value
+		ReleaseCapture();								// Releases the mouse capture from a window in the current thread and restores normal mouse input processing.
+		g_LeftButtonPressed = false;					// Set Left Button as not pressed
+		m_gestureEngine->sendTranslate();   
 
 		return 0;
 	
    	case WM_RBUTTONDOWN:
 		if (GetCursorPos(&g_OrigCursorPos))	//Retrieves the cursor's position, in screen coordinates.
 		{
-			RECT rt;						//defines the coordinates of the upper-left and lower-right corners of a rectangle.
-			GetWindowRect(hWnd, &rt);		//Retrieves the dimensions of the bounding rectangle of the specified window. 
-			g_OrigWndPos.x = rt.left;
-			g_OrigWndPos.y = rt.top;
-			g_RightButtonPressed = true;
-			SetCapture(hWnd);							//Sets the mouse capture to the specified window, hWnd, belonging to the current thread
-			SetCursor(LoadCursor(NULL, IDC_SIZEALL));	//Sets the cursor shape.Four-pointed arrow pointing north, south, east, and west
-			
-			g_LastCursorPos.x = g_OrigCursorPos.x;
-			g_LastCursorPos.y = g_OrigCursorPos.y;
-
-			if (debug){
-			OutputDebugStringW(L"Right Button Pressed. \n");
-			}
+			g_RightButtonPressed = true;	
+			m_gestureEngine->setCursorPosition(g_OrigCursorPos);
 		}
 		return 0;
 	case WM_RBUTTONUP:
 		ReleaseCapture();						//Releases the mouse capture from a window in the current thread and restores normal mouse input processing.
+		g_RightButtonPressed = false;
+		m_gestureEngine->sendRotate();			//When the rotate button is release send it to the server
 		
-			
-									
-		if(m_rotate_value_x<15){
-			//Db database;						//Database Class
-			m_db->getrequest(session_id,"4");		//Perform a Get Request to NAVSEC (sid, iid)
-
-			if (debug){
-				OutputDebugStringW(L"Rotate 15. \n");
-			}
-
-		}
-		else if (m_rotate_value_x>=15 && m_rotate_value_x<30){
-			//Db database;						//Database Class
-			m_db->getrequest(session_id,"5");		//Perform a Get Request to NAVSEC (sid, iid)
-			
-			if (debug){
-				OutputDebugStringW(L"Rotate 30. \n");
-			}
-		}
-		else if (m_rotate_value_x>=30 && m_rotate_value_x<45){
-			//Db database;						//Database Class
-			m_db->getrequest(session_id,"6");		//Perform a Get Request to NAVSEC (sid, iid)
-			OutputDebugStringW(L"Rotate 45. \n");
-		}
-		else if (m_rotate_value_x>=45 && m_rotate_value_x<60){
-			//Db database;						//Database Class
-			m_db->getrequest(session_id,"7");		//Perform a Get Request to NAVSEC (sid, iid)
-			if (debug){
-				OutputDebugStringW(L"Rotate 60. \n");
-			}
-		}
-		else if (m_rotate_value_x>=60 && m_rotate_value_x<75){
-			//Db database;						//Database Class
-			m_db->getrequest(session_id,"8");		//Perform a Get Request to NAVSEC (sid, iid)
-			if (debug){
-				OutputDebugStringW(L"Rotate 75. \n");
-			}
-		}
-		else if (m_rotate_value_x>=75 && m_rotate_value_x<90){
-			//Db database;						//Database Class
-			m_db->getrequest(session_id,"9");		//Perform a Get Request to NAVSEC (sid, iid)
-			if (debug){
-				OutputDebugStringW(L"Rotate 90. \n");
-			}
-		}
-
-		m_rotate_value_x = 0;					//Clear the rotate X value
-		m_rotate_value_y = 0;					//Clear the rotate Y value
-
 		return 0;
 	case WM_MBUTTONDOWN:
 		if (GetCursorPos(&g_OrigCursorPos))	//Retrieves the cursor's position, in screen coordinates.
 		{
-			RECT rt;						//defines the coordinates of the upper-left and lower-right corners of a rectangle.
-			GetWindowRect(hWnd, &rt);		//Retrieves the dimensions of the bounding rectangle of the specified window. 
-			g_OrigWndPos.x = rt.left;
-			g_OrigWndPos.y = rt.top;
 			g_MiddleButtonPressed = true;
-			SetCapture(hWnd);							//Sets the mouse capture to the specified window, hWnd, belonging to the current thread
-			SetCursor(LoadCursor(NULL, IDC_SIZEALL));	//Sets the cursor shape.Four-pointed arrow pointing north, south, east, and west
-			
-			g_LastCursorPos.x = g_OrigCursorPos.x;
-			g_LastCursorPos.y = g_OrigCursorPos.y;
-
-			if (debug){
-			OutputDebugStringW(L"Middle Button Pressed. \n");
-			}
-
-
+			m_gestureEngine->setCursorPosition(g_OrigCursorPos);
 		}
 		return 0;
 	case WM_MBUTTONUP:
-
+		g_MiddleButtonPressed = false;
 		m_gestureEngine->sendZoom();
-
 		ReleaseCapture();						//Releases the mouse capture from a window in the current thread and restores normal mouse input processing.
 	return 0;
 	case WM_CAPTURECHANGED:						//Sent to the window that is losing the mouse capture.
+		g_LeftButtonPressed = (HWND)lParam == hWnd;
 		g_RightButtonPressed = (HWND)lParam == hWnd;	//A handle to the window gaining the mouse capture
 		g_MiddleButtonPressed = (HWND)lParam == hWnd;	
 	return 0;
@@ -651,44 +593,11 @@ LRESULT GLWindow::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			POINT pt;
 			if (GetCursorPos(&pt))
 			{
-
-
-				int dx,dy;
-				
-				dx = pt.x  - g_LastCursorPos.x;
-				dy = pt.y - g_LastCursorPos.y;
-
-				if (dx < 0)      dx = -1;//Mouse moved to the left
-			    else if (dx > 0) dx =  1;//Mouse moved to the right
-			    if (dy < 0)      dy = -1;//Mouse moved up
-			    else if (dy > 0) dy =  1;//Mouse moved down
-				
-				//getAttachedModel()->RotateCamera(0,1,0);
-				getAttachedModel()->RotateCamera(-dx,dy,0);
-
-				m_rotate_value_x	= m_rotate_value_x+dx;
-				m_rotate_value_y	= m_rotate_value_y+dy;
-				//Position the Window
-				/*int wnd_x = g_OrigWndPos.x + 
-				  (pt.x - g_OrigCursorPos.x);
-				int wnd_y = g_OrigWndPos.y + 
-				  (pt.y - g_OrigCursorPos.y);
-				SetWindowPos(hWnd, NULL, wnd_x, 
-				  wnd_y, 0, 0, SWP_NOACTIVATE|
-				  SWP_NOOWNERZORDER|SWP_NOZORDER|
-				  SWP_NOSIZE);*/
-				
-				//Set Last Cursor Position of the mouse
-				g_LastCursorPos.x=pt.x;
-				g_LastCursorPos.y=pt.y;
-
-				if (debug){
-					wchar_t  buf[2048];
-					wsprintf(buf,L"g_OrigCursorPos = (%d, %d) \n",g_OrigCursorPos.x, g_OrigCursorPos.y);
-					OutputDebugStringW(buf);
-
-					wsprintf(buf,L"MovedCursorPos = (%d, %d) \n",pt.x, pt.y);
-					OutputDebugStringW(buf);
+				if(m_isIntersec){
+					m_gestureEngine->ProcessRotate(pt);		//Use Gesture Engine to process translate
+				}else
+				{
+					m_gestureEngine->ProcessMouseRotate(pt);		//Use Gesture Engine to process rotate
 				}
 			}
 		}
@@ -697,45 +606,23 @@ LRESULT GLWindow::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			POINT pt;
 			if (GetCursorPos(&pt))
 			{
-
-
-				int dx,dy;
-				
-				dx = pt.x  - g_LastCursorPos.x;
-				dy = pt.y - g_LastCursorPos.y;
-
-				if (dx < 0)      dx = 1;//Mouse moved to the left
-				else if (dx > 0) dx = -1;//Mouse moved to the right
-				if (dy < 0)      dy = -1;//Mouse moved up
-				else if (dy > 0) dy =  1;//Mouse moved down
-				
-				getAttachedModel()->TranslateCamera(dx,dy,0);
-
-				m_translate_value_x	= m_translate_value_x+dx;
-				m_translate_value_x	= m_translate_value_y+dy;
-				//Position the Window
-				/*int wnd_x = g_OrigWndPos.x + 
-					(pt.x - g_OrigCursorPos.x);
-				int wnd_y = g_OrigWndPos.y + 
-					(pt.y - g_OrigCursorPos.y);
-				SetWindowPos(hWnd, NULL, wnd_x, 
-					wnd_y, 0, 0, SWP_NOACTIVATE|
-					SWP_NOOWNERZORDER|SWP_NOZORDER|
-					SWP_NOSIZE);*/
-				
-				//Set Last Cursor Position of the mouse
-				g_LastCursorPos.x=pt.x;
-				g_LastCursorPos.y=pt.y;
+				//IF Intersec is running run a translate command
+				//If not, run a translate command for the mouse
+				if(m_isIntersec){
+					m_gestureEngine->ProcessTranslate(pt);		//Use Gesture Engine to process translate
+				}else
+				{
+					m_gestureEngine->ProcessMouseTranslate(pt);		//Use Gesture Engine to process translate
+				}
 
 			}
-
 		}
 		if (g_MiddleButtonPressed)
 		{
 			POINT pt;
 			if (GetCursorPos(&pt))
 			{
-				m_gestureEngine->ProcessZoom(pt, g_LastCursorPos);		//Use Gesture Engine to process zoom
+				m_gestureEngine->ProcessZoom(pt);		//Use Gesture Engine to process zoom
 			}
 		}
 	return 0;
@@ -794,9 +681,14 @@ void GLWindow::Setup_GestureWorks(HWND hWnd) {
 	addGesture("p3d_window","n-rotate");
 	addGesture("p3d_window","n-scale");
 	addGesture("p3d_window","n-flick");
+	addGesture("p3d_window","n-hold");
+	addGesture("p3d_window","5-tap");
+	//addGesture("p3d_window","n-tap");
 	
 
 }
+
+
 
 void GLWindow::update_gesture() {
 
@@ -863,9 +755,9 @@ void GLWindow::update_gesture() {
 				getAttachedModel()->RotateCamera(rotation_angle,0,0);
 
 
-				swprintf(buf,L"rotation_angle = (%f) \n",rotation_angle);
-				swprintf(buf,L"(x,y) = (%f, %f) \n", gesture_it->x, gesture_it->y);
-				OutputDebugStringW(buf);
+				//swprintf(buf,L"rotation_angle = (%f) \n",rotation_angle);
+				//(buf,L"(x,y) = (%f, %f) \n", gesture_it->x, gesture_it->y);
+				//OutputDebugStringW(buf);
 					//If we have points down, move the box; if there are no points, this is from gesture inertia and there is no
 					//center about which to rotate
 					/*if(gesture_it->n != 0) {
@@ -883,8 +775,8 @@ void GLWindow::update_gesture() {
 				getAttachedModel()->Zoom(dz);
 
 				if(debug){
-					swprintf(buf,L"zoom = (%f) \n",dz);
-					OutputDebugStringW(buf);
+					//swprintf(buf,L"zoom = (%f) \n",dz);
+					//OutputDebugStringW(buf);
 				}
 				
 			}
@@ -894,10 +786,42 @@ void GLWindow::update_gesture() {
 
 				if(debug){
 					swprintf(buf,L"flick = (%f,%f) \n",swipe_dx,swipe_dy);
+				
 					OutputDebugStringW(buf);
 				}
 				
 			}
+			else if(gesture_it->gesture_id == "n-hold") {
+
+				
+				float numberFingers = gesture_it->values["hold_n"];
+
+				if(numberFingers == 10){
+					//Run Wireshark
+					m_gestureEngine->ProcessTenFingerHold();
+				}
+				if(numberFingers == 4){
+					//Run Wireshark
+					m_gestureEngine->ProcessFourFingerHold();
+				}
+
+				if(debug){
+					swprintf(buf,L"n finger hold = (%f,%f) and n = %f \n", gesture_it->values["hold_x"],gesture_it->values["hold_y"],gesture_it->values["hold_n"]);
+					OutputDebugStringW(buf);
+				}
+			}
+			else if(gesture_it->gesture_id == "5-tap") {
+
+				//Add left plane
+				m_gestureEngine->ProcessFiveFingerTap();
+
+				if(debug){
+					swprintf(buf,L"5 finger tap");
+					OutputDebugStringW(buf);
+				}
+				
+			}
+			
 
 	}
 
@@ -1115,14 +1039,30 @@ void GLWindow::OnCommand(HWND hwnd, int id, HWND hCtl, UINT codeNotify)
 			ofn.Flags = OFN_PATHMUSTEXIST|OFN_FILEMUSTEXIST ;
 			GetOpenFileName( &ofn );
 			// Now simpley display the file name
-			MessageBoxW ( NULL , ofn.lpstrFile , L"File Name" , MB_OK);
-			//Clear the opengl screen
-			getAttachedModel()->clearScreen();	//Clear the screen
 			
-			wchar_t  buf[2048];
-			wsprintf(buf,L"Loading the pcap file %s\n", ofn.lpstrFile);
-			OutputDebugStringW(buf);
-			getAttachedModel()->loadPcapFile((char*)ofn.lpstrFile);
+
+			if((char*)ofn.lpstrFile[0] != 0){
+				wchar_t  buf[2048];
+				wsprintf(buf,L"Loading the pcap file '%s'\n", ofn.lpstrFile);
+				OutputDebugStringW(buf);
+
+				//MessageBoxW ( NULL , ofn.lpstrFile , L"File Name" , MB_OK);
+
+				//Clear the opengl screen
+				getAttachedModel()->clearScreen();	//Clear the screen
+
+
+				//getAttachedModel()->loadPcapFile((char*)ofn.lpstrFile);			
+				
+
+			}
+			else
+			{
+				wchar_t  buf[2048];
+				wsprintf(buf,L"No pcap file was loaded \n");
+				OutputDebugStringW(buf);
+			}
+
 
 		break;
 		case IDM_HELP_ABOUT:
@@ -1143,12 +1083,74 @@ void GLWindow::OnCommand(HWND hwnd, int id, HWND hCtl, UINT codeNotify)
 bool GLWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpcs)
 {
 	//Number of buttons in the toolbar
-	const int numbuttons1 = 4;
+	const int numbuttons1 = 1;
 
+	TBBUTTON buttons[numbuttons1];
 	// Create Statusbar
 	GLWindow::m_hStatusbar = CreateStatusWindowW(WS_CHILD|WS_VISIBLE, L"Ready", hwnd, IDC_STATUSBAR);
 	
-	 // Create Main Toolbar
+	/* Create image list from a custom bitmap */
+	HIMAGELIST himlToolbar = ImageList_LoadImage(
+	GLWindow::m_hinstance,			/* App instance handle */
+	(LPCTSTR)IDB_STOP_ICON,/* ID of your custom bitmap in resources */
+	16,					/* Width of each button image within the bitmap */
+	1,					/* By how much toolbar can grow. I don't use this */
+	RGB(255, 0, 255),	/* Transparent color used in button images. I use magenta */
+	IMAGE_BITMAP,
+	LR_CREATEDIBSECTION);
+
+	if(!himlToolbar)
+	{
+		wchar_t  buf[2048];
+		wsprintf(buf,L"No toolbar img list was loaded \n");
+		OutputDebugStringW(buf);
+		return 1;
+	}
+
+GLWindow::m_hMainToolbar
+	= CreateWindowEx(0, TOOLBARCLASSNAME, NULL, WS_CHILD | WS_VISIBLE, 0, 0, 1, 1, hwnd, NULL, GLWindow::m_hinstance, NULL);
+
+if(!GLWindow::m_hMainToolbar)
+{
+		wchar_t  buf[2048];
+		wsprintf(buf,L"No toolbar was loaded \n");
+		OutputDebugStringW(buf);
+		return 1;
+}
+
+/* Attach image list to the toolbar */
+
+SendMessage(GLWindow::m_hMainToolbar, TB_SETIMAGELIST, 0, (LPARAM)himlToolbar);
+
+/* Set common properties for all buttons */
+
+for(int n = 0; n < numbuttons1; n++)
+{
+	buttons[n].iBitmap = n;
+	buttons[n].fsState = TBSTATE_ENABLED;
+	buttons[n].fsStyle = TBSTYLE_BUTTON;
+	buttons[n].dwData = 0;
+	buttons[n].iString = 0;
+}
+
+/* Set properties specific to each button */
+buttons[0].idCommand = ID_EDITOR_STOP;
+
+
+/* Tell toolbar the size of button structure */
+
+SendMessage(GLWindow::m_hMainToolbar, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
+
+/* Add 6 buttons to the toolbar that we initialized earlier */
+
+SendMessage(GLWindow::m_hMainToolbar, TB_ADDBUTTONS, (WPARAM)6, (LPARAM)&buttons);
+
+/* Auto-size the toolbar */
+
+SendMessage(GLWindow::m_hMainToolbar, TB_AUTOSIZE, 0, 0);
+
+	/*
+		 // Create Main Toolbar
 	GLWindow::m_hMainToolbar = CreateWindowEx(
 		0, 
 		TOOLBARCLASSNAME, 
@@ -1169,6 +1171,8 @@ bool GLWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpcs)
 		ILC_COLOR16 | ILC_MASK, // ILC_MASK ensures transparent background
 		numbuttons1,
 		0);
+
+
 
 	 // Set the image list.
 	SendMessage(
@@ -1192,27 +1196,6 @@ bool GLWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpcs)
 			BTNS_AUTOSIZE, 
 			{0}, 
 			0, 
-			0},
-		{MAKELONG(STD_FILEOPEN, 0), 
-			IDM_FILE_OPEN, 
-			TBSTATE_ENABLED,
-			BTNS_AUTOSIZE, 
-			{0}, 
-			0, 
-			0},
-		{MAKELONG(STD_FILESAVE, 0), 
-			IDM_FILE_SAVE, 
-			TBSTATE_ENABLED,
-			BTNS_AUTOSIZE, 
-			{0}, 
-			0, 
-			0},
-		{MAKELONG(STD_FILESAVE, 0), 
-			0, 
-			TBSTATE_ENABLED,
-			TBSTYLE_SEP, 
-			{0}, 
-			0, 
 			0}
 	};
 
@@ -1223,7 +1206,7 @@ bool GLWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpcs)
 	// Show toolbar
 	SendMessage(GLWindow::m_hMainToolbar, TB_AUTOSIZE, 0, 0);
 	ShowWindow(GLWindow::m_hMainToolbar, TRUE);
-
+	*/
 
 	return true;
 }
