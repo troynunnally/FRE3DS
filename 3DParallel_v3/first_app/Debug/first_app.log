@@ -1,91 +1,13 @@
-﻿Build started 7/13/2014 11:29:58 PM.
+﻿Build started 7/14/2014 1:44:08 PM.
      1>Project "C:\Users\VizSec\Documents\GitHub\FRE3DS\3DParallel_v3\first_app\first_app.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "Debug\3DParallel.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /Iinclude /IC:\WpdPack_4_1_2\WpdPack\Include /IC:\WpdPack\Include /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D WPCAP /D HAVE_REMOTE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt AboutDialog.cpp CSkeletonBasics.cpp glwindow.cpp main.cpp
-         main.cpp
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.h(18): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\cstdio(48): warning C4995: 'gets': name was marked as #pragma deprecated
-     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\cstdio(52): warning C4995: 'sprintf': name was marked as #pragma deprecated
-     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\cstdio(55): warning C4995: 'vsprintf': name was marked as #pragma deprecated
-     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\cstring(21): warning C4995: 'strcat': name was marked as #pragma deprecated
-     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\cstring(22): warning C4995: 'strcpy': name was marked as #pragma deprecated
-     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\cwchar(30): warning C4995: 'swprintf': name was marked as #pragma deprecated
-     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\cwchar(31): warning C4995: 'vswprintf': name was marked as #pragma deprecated
-     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\cwchar(33): warning C4995: 'wcscat': name was marked as #pragma deprecated
-     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\cwchar(35): warning C4995: 'wcscpy': name was marked as #pragma deprecated
-     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\intrin.h(1092): warning C4995: 'wcscat': name was marked as #pragma deprecated
-     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\intrin.h(1094): warning C4995: 'wcscpy': name was marked as #pragma deprecated
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.h(19): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\string(757): warning C4995: 'swprintf': name was marked as #pragma deprecated
-     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\string(766): warning C4995: 'swprintf': name was marked as #pragma deprecated
-     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\string(775): warning C4995: 'swprintf': name was marked as #pragma deprecated
-         glwindow.cpp
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(7): warning C4005: '_WIN32_IE' : macro redefinition
-                 c:\program files (x86)\microsoft sdks\windows\v7.0a\include\sdkddkver.h(230) : see previous definition of '_WIN32_IE'
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.h(18): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\intrin.h(1092): warning C4995: 'wcscat': name was marked as #pragma deprecated
-     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\intrin.h(1094): warning C4995: 'wcscpy': name was marked as #pragma deprecated
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.h(19): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\string(757): warning C4995: 'swprintf': name was marked as #pragma deprecated
-     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\string(766): warning C4995: 'swprintf': name was marked as #pragma deprecated
-     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\string(775): warning C4995: 'swprintf': name was marked as #pragma deprecated
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(303): warning C4995: 'wsprintf': name was marked as #pragma deprecated
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(303): warning C4995: 'wsprintfW': name was marked as #pragma deprecated
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(329): warning C4995: 'wsprintf': name was marked as #pragma deprecated
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(329): warning C4995: 'wsprintfW': name was marked as #pragma deprecated
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(274): warning C4101: 'dwStyle' : unreferenced local variable
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(273): warning C4101: 'dwExStyle' : unreferenced local variable
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(733): warning C4995: 'swprintf': name was marked as #pragma deprecated
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(733): warning C4996: 'swprintf': swprintf has been changed to conform with the ISO C standard, adding an extra character count parameter. To use traditional Microsoft swprintf, set _CRT_NON_CONFORMING_SWPRINTFS.
-                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\swprintf.inl(85) : see declaration of 'swprintf'
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(742): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(743): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(745): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(745): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(754): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(755): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(774): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(775): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(788): warning C4995: 'swprintf': name was marked as #pragma deprecated
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(788): warning C4996: 'swprintf': swprintf has been changed to conform with the ISO C standard, adding an extra character count parameter. To use traditional Microsoft swprintf, set _CRT_NON_CONFORMING_SWPRINTFS.
-                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\swprintf.inl(85) : see declaration of 'swprintf'
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(809): warning C4995: 'swprintf': name was marked as #pragma deprecated
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(809): warning C4996: 'swprintf': swprintf has been changed to conform with the ISO C standard, adding an extra character count parameter. To use traditional Microsoft swprintf, set _CRT_NON_CONFORMING_SWPRINTFS.
-                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\swprintf.inl(85) : see declaration of 'swprintf'
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(819): warning C4995: 'swprintf': name was marked as #pragma deprecated
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(819): warning C4996: 'swprintf': swprintf has been changed to conform with the ISO C standard, adding an extra character count parameter. To use traditional Microsoft swprintf, set _CRT_NON_CONFORMING_SWPRINTFS.
-                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\swprintf.inl(85) : see declaration of 'swprintf'
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(836): warning C4305: 'initializing' : truncation from 'double' to 'float'
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(837): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(953): warning C4995: 'wsprintf': name was marked as #pragma deprecated
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(953): warning C4995: 'wsprintfW': name was marked as #pragma deprecated
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(1046): warning C4995: 'wsprintf': name was marked as #pragma deprecated
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(1046): warning C4995: 'wsprintfW': name was marked as #pragma deprecated
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(1062): warning C4995: 'wsprintf': name was marked as #pragma deprecated
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(1062): warning C4995: 'wsprintfW': name was marked as #pragma deprecated
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(1105): warning C4995: 'wsprintf': name was marked as #pragma deprecated
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(1105): warning C4995: 'wsprintfW': name was marked as #pragma deprecated
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(1116): warning C4995: 'wsprintf': name was marked as #pragma deprecated
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\glwindow.cpp(1116): warning C4995: 'wsprintfW': name was marked as #pragma deprecated
-         CSkeletonBasics.cpp
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\cskeletonbasics.cpp(24): warning C4553: '==' : operator has no effect; did you intend '='?
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\cskeletonbasics.cpp(25): warning C4553: '==' : operator has no effect; did you intend '='?
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\cskeletonbasics.cpp(26): warning C4553: '==' : operator has no effect; did you intend '='?
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\cskeletonbasics.cpp(27): warning C4553: '==' : operator has no effect; did you intend '='?
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\cskeletonbasics.cpp(28): warning C4553: '==' : operator has no effect; did you intend '='?
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\cskeletonbasics.cpp(262): warning C4995: 'wsprintf': name was marked as #pragma deprecated
-     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\cskeletonbasics.cpp(262): warning C4995: 'wsprintfW': name was marked as #pragma deprecated
-         Generating Code...
-         Skipping... (no relevant changes detected)
-         AboutDialog.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /Iinclude /IC:\WpdPack_4_1_2\WpdPack\Include /IC:\WpdPack\Include /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D WPCAP /D HAVE_REMOTE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ModelGL.cpp
+         ModelGL.cpp
+     1>c:\users\vizsec\documents\github\fre3ds\3dparallel_v3\first_app\modelgl.cpp(212): warning C4101: 'count' : unreferenced local variable
        ResourceCompile:
-         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /D _UNICODE /D UNICODE /l"0x0409" /nologo /fo"Debug\resource.res" resource.rc 
-     1>resource.rc(20): warning RC2182: duplicate dialog control ID 101
-         
-     1>resource.rc(22): warning RC2182: duplicate dialog control ID 101
-         
+         All outputs are up-to-date.
        ManifestResourceCompile:
          All outputs are up-to-date.
        Link:
@@ -119,4 +41,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:03.24
+Time Elapsed 00:00:01.20

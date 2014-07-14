@@ -108,18 +108,42 @@ bool ModelGL::init()
 	
 	
 
-	//ModelGL::loadPcapFile("p01_port_confusion_DOS_and_scan.pcap");
-
 	//WARMUP
-	ModelGL::loadPcapFile("pcap/ftp_disguise.pcap");								//works
-	//ModelGL::loadPcapFile("pcap/p01_port_confusion_DOS_and_scan.pcap");			//show artifacts			
-	//ModelGL::loadPcapFile("pcap/p03_port_source_confusion_r2.pcap");				//works
-	//ModelGL::loadPcapFile("pcap/p05_test.pcap.pcap");								//not workig
-	//ModelGL::loadPcapFile("pcap/p04_WWA_r2.pcap");
+	//ModelGL::loadPcapFile("pcap/p01b.pcap");										//works
+	//ModelGL::loadPcapFile("pcap/p01c.pcap");
+	//ModelGL::loadPcapFile("pcap/p02a.pcap");										//works
+	//ModelGL::loadPcapFile("pcap/p03b.pcap");										//works
+	//ModelGL::loadPcapFile("pcap/p05a.pcap");										//works
+	//ModelGL::loadPcapFile("pcap/p07a.pcap");										//works
+	//ModelGL::loadPcapFile("pcap/p04a.pcap");										//works
+
+	//TESTING
+
+	//ModelGL::loadPcapFile("pcap/p01d.pcap");										//works
 	
+	//ModelGL::loadPcapFile("pcap/p01c.pcap");										//works
 
+	//ModelGL::loadPcapFile("pcap/p02b.pcap");										//works
 
+	//ModelGL::loadPcapFile("pcap/p03a.pcap");										//works
+	
+	//ModelGL::loadPcapFile("pcap/p05b.pcap");										//works
 
+	//ModelGL::loadPcapFile("pcap/p04c.pcap");										//works
+	//ModelGL::loadPcapFile("pcap/p04d.pcap");										//works
+
+	//ModelGL::loadPcapFile("pcap/p04e.pcap");										//works
+
+	//ModelGL::loadPcapFile("pcap/p05c.pcap");										//works
+	//ModelGL::loadPcapFile("pcap/p05b.pcap");										//works\
+
+	//ModelGL::loadPcapFile("pcap/p06a.pcap");										//works
+	//ModelGL::loadPcapFile("pcap/p06b.pcap");										//works
+	//ModelGL::loadPcapFile("pcap/p06c.pcap");										//works
+
+	//ModelGL::loadPcapFile("pcap/p08a.pcap");										//works
+	//ModelGL::loadPcapFile("pcap/p08b.pcap");										//works
+	//ModelGL::loadPcapFile("pcap/p08c.pcap");										//works
     //Return success
     return true;
 }

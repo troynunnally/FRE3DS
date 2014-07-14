@@ -1,0 +1,106 @@
+#########################################################################
+# Title: Source Port Confusion Case
+# 
+# Description: This TCL script sends spoofed packets on the network. The
+# 	       source ip increments as well as the destination IP.
+#	       The source port and destination stays the fixed.  
+#########################################################################
+
+
+set  sSuffix .3.4.5
+set  dSuffix .3.4.5
+
+# Spoofed Botnet of 100 host attempts to connect to port 30000
+for {set i 1} {$i < 100} {incr i 2} {
+   #Source suffix is equivalent 
+   set sPrefix $i
+   #Set the destination as 20 more than sSuffix
+   set dPrefix 132
+   
+   #Concatenates the  prefix and suffix to make Source address
+   set saddress $sPrefix$sSuffix
+   set daddress $dPrefix$dSuffix
+   
+   #Display source address to terminal
+   puts "Source=$saddress, Destination=$daddress"
+ 
+   #Create a packet 
+   set syn {}
+   append syn "ip(saddr=$saddress,daddr=$daddress)"
+   append syn "+tcp(sport=30000,dport=30000,flags=2)"
+
+   #Send the pack
+   hping send $syn
+}
+
+
+
+
+#Scan every 200 ports to 0-20000 ports from 22.3.4.5
+for {set i 1} {$i < 14000} {incr i 1000} {
+   #Source suffix is equivalent 
+   set sourcePort 30000
+   #Set the destination as 20 more than sSuffix
+   set destPort $i
+   
+   #Set Source and Destination Address
+   set saddress 130.32.87.6
+   set daddress 132.3.4.5
+   
+   #Display source address to terminal
+   puts "Source=$saddress, Destination=$daddress, sPort= $sourcePort, dPort = $destPort "
+ 
+   #Create a packet 
+   set syn {}
+   append syn "ip(saddr=$saddress,daddr=$daddress)"
+   append syn "+tcp(sport=$sourcePort,dport=$destPort,flags=2)"
+
+   #Send the pack
+   hping send $syn
+}
+
+#Scan of 14 ports from 160.54.85.5
+for {set i 14000} {$i < 28000} {incr i 1000} {
+   #Source suffix is equivalent 
+   set sourcePort 30000
+   #Set the destination as 20 more than sSuffix
+   set destPort $i
+   
+   #Set Source and Destination Address
+   set saddress 160.54.85.5
+   set daddress 132.3.4.5
+   
+   #Display source address to terminal
+   puts "Source=$saddress, Destination=$daddress, sPort= $sourcePort, dPort = $destPort "
+ 
+   #Create a packet 
+   set syn {}
+   append syn "ip(saddr=$saddress,daddr=$daddress)"
+   append syn "+tcp(sport=$sourcePort,dport=$destPort,flags=2)"
+
+   #Send the pack
+   hping send $syn
+}
+
+#Scan of 14 ports from 197.49.39.98
+for {set i 28000} {$i < 42000} {incr i 1000} {
+   #Source suffix is equivalent 
+   set sourcePort 30000
+   #Set the destination as 20 more than sSuffix
+   set destPort $i
+   
+   #Set Source and Destination Address
+   set saddress 197.49.39.98
+   set daddress 132.3.4.5
+   
+   #Display source address to terminal
+   puts "Source=$saddress, Destination=$daddress, sPort= $sourcePort, dPort = $destPort "
+ 
+   #Create a packet 
+   set syn {}
+   append syn "ip(saddr=$saddress,daddr=$daddress)"
+   append syn "+tcp(sport=$sourcePort,dport=$destPort,flags=2)"
+
+   #Send the pack
+   hping send $syn
+}
