@@ -1,0 +1,10 @@
+
+# Build results
+
+3DParallel_v3/ipch
+3DParallel_v3/first_app/Debug/
+3DParallel_v3/Debug/
+
+#files
+*.sdf
+*.suo
