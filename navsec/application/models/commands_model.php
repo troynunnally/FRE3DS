@@ -42,6 +42,21 @@ class Commands_model extends CI_Model{
 				
 			}
 			
+			
+/*  GET LIST OF ALL COMMANDS
+/*---------------------------*/	
+/*  */
+		
+		function getInteractionNumber($sid)
+			{
+			
+				/*VARIABLES*/
+				$active_user_sid = "1";
+				$active_user_commands = json_decode($this->getInteractionList($active_user_sid), true);
+		
+				return count($active_user_commands);
+			}
+			
 /*  GET NEXT COMMANDS
 /*---------------------------*/	
 /*  */

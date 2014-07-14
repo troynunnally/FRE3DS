@@ -18,6 +18,7 @@ class Dashboard extends CI_Controller {
 			$data['active_user'] 					= $this->navsec_model->read_active_user(); 
 			$data['active_session'] 				= $this->navsec_model->read_current_vector(1); 
 			$data['active_interactions'] 			= $this->commands_model->getInteractionList(1);
+			$data['number_interactions'] 			= $this->commands_model->getInteractionNumber(1);
 			$data['stats']							= $this->navsec_model->read_stats(); 
 			$data['distance_scores']				= $this->navsec_model->computeEuclidDistance(); 
 			$data['minimum_score']					= $this->navsec_model->computeMinimumScore($data['distance_scores']); 
@@ -39,6 +40,7 @@ class Dashboard extends CI_Controller {
 			$data['active_user'] 					= $this->navsec_model->read_active_user(); 
 			$data['active_session'] 				= $this->navsec_model->read_current_vector(1); 
 			$data['active_interactions'] 			= $this->commands_model->getInteractionList(1);
+			$data['number_interactions'] 			= $this->commands_model->getInteractionNumber(1);
 			$data['stats']							= $this->navsec_model->read_stats(); 
 			$data['distance_scores']				= $this->navsec_model->computeEuclidDistance(); 
 			$data['minimum_score']					= $this->navsec_model->computeMinimumScore($data['distance_scores']); 

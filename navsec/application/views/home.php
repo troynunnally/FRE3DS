@@ -10,12 +10,12 @@
     <!-- Le styles -->
     <link href="<?=base_url();?>assets/css/bootstrap.css" rel="stylesheet">
     <style>
-      body {
+     body {
         padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-      }
+     }
 	.rec_box{
-	min-height: 100px !important;
-}
+		min-height: 100px !important;
+	}
     </style>
     <link href="<?=base_url();?>assets/css/bootstrap-responsive.css" rel="stylesheet">
 
@@ -27,9 +27,10 @@
     <!-- Fav and touch icons -->
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="<?=base_url();?>assets/ico/apple-touch-icon-144-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="<?=base_url();?>assets/ico/apple-touch-icon-114-precomposed.png">
-      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="<?=base_url();?>assets/ico/apple-touch-icon-72-precomposed.png">
-                    <link rel="apple-touch-icon-precomposed" href="<?=base_url();?>assets/ico/apple-touch-icon-57-precomposed.png">
-                                   <link rel="shortcut icon" href="<?=base_url();?>assets/ico/favicon.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="<?=base_url();?>assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="<?=base_url();?>assets/ico/apple-touch-icon-57-precomposed.png">
+    <link rel="shortcut icon" href="<?=base_url();?>assets/ico/favicon.png">
+    
   </head>
 
   <body>
@@ -44,18 +45,25 @@
           </button>
           <a class="brand" href="#">NAVSEC </a>
           <div class="nav-collapse collapse">
-            <ul class="nav">
+            <ul class="nav navbar-nav navbar-left">
               <li class="active"><a href="#">Home</a></li>
               <li><a href="#about">About</a></li>
               <li><a href="#contact">Contact</a></li>
             </ul>
+            
+           
           </div><!--/.nav-collapse -->
         </div>
       </div>
     </div>
 
     <div class="container">
-
+    
+      <div class="timer">
+	  		<a href="#" class="btn btn-large btn-success" style="color:#000" id="start_timer_button">Start</a>
+            <a href="#" class="btn btn-large btn-danger" style="color:#000;display:none;" id="stop_timer_button">Stop</a>
+      </div>
+	
       <h1>NAVSEC Feedback Page</h1>
       <br>
       
@@ -90,9 +98,9 @@
       <p> Email: <?=$active_user->email; ?></p>
       <p> Current Session: <?=$active_user->sid; ?></p>
       <p> Interaction Vector: <span id="int_vector"><?=$active_session['print'];?></span></p>
-      <p> Interaction Sequence: <span id="int_sequence"><?=$active_interactions;?></span>
-
-      </p>
+      <p> Interaction Sequence: <span id="int_sequence"><?=$active_interactions;?></span></p>
+      <p> Interaction Count: <span id="int_count"><?=$number_interactions;?></span></p>
+      <p> Timer: <span id="minutes"></span>:<span id="seconds"></span></p>
       
       <h2>Recommendation: </h2>
       <hr>
@@ -148,6 +156,8 @@
     <script src="<?=base_url();?>assets/js/bootstrap-typeahead.js"></script>
 	 <script type="text/javascript">
 		
+		
+		
 		every_five_sec = setInterval(function(){
 			/*CONSOLE*/
 				console.log('Query for result');
@@ -184,6 +194,7 @@
 									/*EMPTY*/
 										$('span#int_vector').empty();
 										$('span#int_sequence').empty();
+										$('span#int_count').empty();
 										$('span#rec_expert').empty();
 										$('span#rec_session').empty();
 										$('span#euc_min_score').empty();
@@ -205,6 +216,7 @@
 									/*APPEND DATA*/
 										$('span#int_vector').append(data.active_session['print']);
 										$('span#int_sequence').append(data.active_interactions);
+										$('span#int_count').append(data.number_interactions);
 										$('span#rec_expert').append(data.minimum_score['best_user']);
 										$('span#rec_session').append(data.minimum_score['best_session']);
 										$('span#euc_min_score').append(data.minimum_score['best_score']);
@@ -217,6 +229,58 @@
 
     	}, 5000);
 					
+					
+		$(document).ready(function () {
+			
+			console.log("Doc ready  ");
+			
+			var timerInterval;
+			
+			/*CLICK HANDLER*/
+			/*- click hanlder to train an iamge*/
+				$('.container').on('click', 'a#start_timer_button', function (e) {
+					
+					e.preventDefault(); //prevent link from going to new page/hash
+					
+					console.log("Start button pressed");
+					
+					var sec = 0;
+					
+					timerInterval = setInterval( function(){
+						$("#seconds").html(pad(++sec%60));
+						$("#minutes").html(pad(parseInt(sec/60,10)));
+					}, 1000);
+					
+					
+					$('a#start_timer_button').hide();
+					$('a#stop_timer_button').show();
+					
+				});
+				
+				
+				
+				/*CLICK HANDLER*/
+			/*- click hanlder to train an iamge*/
+				$('.container').on('click', 'a#stop_timer_button', function (e) {
+					
+					e.preventDefault(); //prevent link from going to new page/hash
+					
+					console.log("Stop button pressed");
+					
+					var sec = 0;
+					
+					/* later */
+					clearInterval(timerInterval);
+					
+
+					$('a#stop_timer_button').hide();
+					$('a#start_timer_button').show();
+					
+				});
+	   
+		});
+		
+		function pad ( val ) { return val > 9 ? val : "0" + val; }
 					
 						
 							
