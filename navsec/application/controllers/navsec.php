@@ -45,6 +45,17 @@ class Navsec extends CI_Controller {
 				redirect('dashboard', 'refresh');
 			
 		}	
+		
+	function upload_data()
+		{
+
+			/*VARIABLES PASS*/
+					$this->commands_model->upload_data();
+					
+			/*REFRESH HOME*/
+				redirect('dashboard', 'refresh');
+			
+		}	
 	
 }
 

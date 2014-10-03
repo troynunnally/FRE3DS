@@ -428,7 +428,139 @@ function create_session()
 				return $distance_vec;
 		}
 		
+	
+	
+	/*  RESET USER
+/*---------------------------*/	
+	
+	
+	function upload_data(){
 		
+		
+			/*Load Databse*/
+				$navsec = $this->load->database('default', TRUE);
+			
+			/*Variables*/
+				
+				$sid				= 1;
+				$uid 				= 1;				
+		/*UPDATE THE ACTIVE SESSIONS*/	
+			/*Update Datebase :: Reset the steps to 0*/
+				$update	= array(	
+																			
+						'steps'		=> '0',
+
+				);
+			
+			/*UPDATE ACTIVE_SESSIONS TBL DATABASE*/
+				$navsec->where('sid', $sid); 
+				$navsec->update('active_sessions', $update);
+				
+		/*UPDATE THE SESSIONS TABLE*/	
+			/*Update Datebase :: Reset the update */
+				$update	= array(	
+																			
+						'commands'		=> '[]',
+
+				);
+			
+			/*UPDATE ACTIVE_SESSIONS TBL DATABASE*/
+				$navsec->where('sid', $sid); 
+				$navsec->update('sessions', $update);
+
+
+		/*UPDATE THE SESSIONS TABLE*/	
+			/*Update Datebase :: Reset the session_vectors table */
+				$update	= array(	
+																			
+						'left_plane'			=> '0',
+						'right_plane'			=> '0',
+						'link_color'			=> '0',
+						'pckt_size_y'			=> '0',
+						'pckt_size_z'			=> '0',
+						'total_num_pckt_y'		=> '0',
+						'total_num_pckt_z'		=> '0',
+						's_port_y'				=> '0',
+						's_port_z'				=> '0',
+						'd_port_y'				=> '0',
+						'd_port_z'				=> '0',
+						's_ip_y'				=> '0',
+						's_ip_z'				=> '0',
+						'd_ip_y'				=> '0',
+						'd_ip_z'				=> '0',
+						'transport_protocol'	=> '0',
+						'network_protocol'		=> '0',
+						'ip_flag'				=> '0',
+						'time_y'				=> '0',
+						'time_z'				=> '0',
+						'zoom_out_10'			=> '0',
+						'zoom_out_20'			=> '0',
+						'zoom_out_30'			=> '0',
+						'zoom_out_40'			=> '0',
+						'zoom_out_50'			=> '0',
+						'zoom_in_10'			=> '0',
+						'zoom_in_20'			=> '0',
+						'zoom_in_30'			=> '0',
+						'zoom_in_40'			=> '0',
+						'zoom_in_50'			=> '0',
+						'rotate_15_x'			=> '0',
+						'rotate_30_x'			=> '0',
+						'rotate_45_x'			=> '0',
+						'rotate_60_x'			=> '0',
+						'rotate_75_x'			=> '0',
+						'rotate_90_x'			=> '0',
+						'rotate_15_y'			=> '0',
+						'rotate_30_y'			=> '0',
+						'rotate_45_y'			=> '0',
+						'rotate_60_y'			=> '0',
+						'rotate_75_y'			=> '0',
+						'rotate_90_y'			=> '0',
+						'translate_x'			=> '0',	
+						'translate_y'			=> '0',	
+						'translate_z'			=> '0',
+						'clear'					=> '0',				
+						'camera_home'			=> '0',				
+					);
+			
+			/*UPDATE ACTIVE_SESSIONS TBL DATABASE*/
+				$navsec->where('sid', $sid); 
+				$navsec->update('session_vectors', $update);
+
+	}
+/*  COMPUTE MINIMUM SCORE
+/*---------------------------*/	
+/*  */
+	function computeMinimumScore($scores)
+		{
+			
+		/*VARIABLES*/ 
+			$i=0;
+			$best_session = $scores[0]['sid'];
+			$minimum_score = $scores[0]['score'];
+			
+		/*FIND MIN SCORE*/
+			for($i = 1; $i < count($scores); $i++){
+				if($scores[$i]['score'] < $minimum_score )
+				{
+					$minimum_score = $scores[$i]['score'];
+					$best_session = $scores[$i]['sid'];
+					
+				}
+				
+			}
+			
+			$best_user =  $this->getExpertUID($best_session);
+		
+			$data = array(
+				'best_score' 		=> $minimum_score,
+				'best_session' 		=> $best_session,
+				'best_user' 		=> $best_user,
+				);
+				
+			return $data;
+		}
+		
+			
 /*  RESET USER
 /*---------------------------*/	
 	
